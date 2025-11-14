@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Search, Filter, ShoppingCart, Heart } from 'lucide-react'
+import { Search, Filter, ShoppingCart, Heart, Package, Home } from 'lucide-react'
 import Image from 'next/image'
 import axios from 'axios'
 import toast from 'react-hot-toast'
@@ -27,7 +27,7 @@ export default function ProductPage() {
   const [wishlistItems, setWishlistItems] = useState<string[]>([])
   const [loadingCartItems, setLoadingCartItems] = useState<string[]>([])
 
-  const categories = ['all', 'Pain Relief', 'Vitamins', 'Antibiotics', 'First Aid', 'Skincare']
+  const categories = ['all', 'Pain Relief', 'Vitamins', 'Antibiotics', 'First Aid', 'Skincare', 'Diabetes', 'Personal Care', 'Other']
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -133,6 +133,34 @@ export default function ProductPage() {
   return (
     <div className="min-h-screen bg-cyan-50 p-6">
       <div className="max-w-7xl mx-auto">
+        {/* Navigation Links */}
+        <div className="flex flex-wrap gap-4 mb-6 justify-center md:justify-start">
+          <Link 
+            href="/dashboard" 
+            className="flex items-center gap-2 bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white px-6 py-2.5 rounded-lg transition-all duration-300 shadow-lg hover:shadow-green-200 transform hover:-translate-y-0.5">
+            <Home size={20} />
+            Home
+          </Link>
+          <Link 
+            href="/cart" 
+            className="flex items-center gap-2 bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white px-6 py-2.5 rounded-lg transition-all duration-300 shadow-lg hover:shadow-green-200 transform hover:-translate-y-0.5">
+            <ShoppingCart size={20} />
+            View Cart
+          </Link>
+          <Link 
+            href="/wishlist" 
+            className="flex items-center gap-2 bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white px-6 py-2.5 rounded-lg transition-all duration-300 shadow-lg hover:shadow-green-200 transform hover:-translate-y-0.5">
+            <Heart size={20} />
+            Wishlist
+          </Link>
+          <Link 
+            href="/orders" 
+            className="flex items-center gap-2 bg-gradient-to-r from-green-400 to-green-500 hover:from-green-500 hover:to-green-600 text-white px-6 py-2.5 rounded-lg transition-all duration-300 shadow-lg hover:shadow-green-200 transform hover:-translate-y-0.5">
+            <Package size={20} />
+            My Orders
+          </Link>
+        </div>
+
         {/* Search and Filter */}
         <div className="bg-white p-4 rounded-lg shadow-sm mb-6">
           <div className="flex flex-col md:flex-row gap-4">
@@ -164,59 +192,60 @@ export default function ProductPage() {
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
           {filteredProducts.map((product) => (
-            <div key={product._id} className="bg-white rounded-lg shadow-sm overflow-hidden">
-              <div className="relative h-48">
+            <div key={product._id} className="bg-white rounded-lg shadow-sm overflow-hidden flex flex-col">
+              <div className="relative h-32 sm:h-40">
                 <Image
                   src={product.image}
                   alt={product.name}
                   fill
-                  className="object-cover"
+                  className="object-contain"
                 />
               </div>
-              <div className="p-4">
-                <h3 className="font-medium text-gray-800 mb-2">{product.name}</h3>
-                <p className="text-sm text-gray-500 mb-2">{product.description}</p>
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-blue-600 font-bold">₹{product.price}</span>
-                  {product.requiresPrescription && (
-                    <span className="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">
-                      Prescription Required
-                    </span>
-                  )}
-                </div>
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => addToCart(product._id)}
-                    disabled={product.stock === 0 || loadingCartItems.includes(product._id)}
-                    className={`flex-1 py-2 rounded-lg flex items-center justify-center gap-2 ${
-                      product.stock > 0
-                        ? 'bg-blue-600 text-white hover:bg-blue-700'
-                        : 'bg-gray-200 text-gray-500 cursor-not-allowed'
-                    }`}
-                  >
-                    <ShoppingCart size={18} className={loadingCartItems.includes(product._id) ? 'animate-spin' : ''} />
-                    {loadingCartItems.includes(product._id) 
-                      ? 'Adding...' 
-                      : product.stock > 0 
-                        ? 'Add to Cart' 
-                        : 'Out of Stock'
-                    }
-                  </button>
-                  <button
-                    onClick={() => toggleWishlist(product._id)}
-                    className={`p-2 rounded-lg ${
-                      wishlistItems.includes(product._id)
-                        ? 'text-red-600 bg-red-50'
-                        : 'text-gray-400 hover:text-red-600 hover:bg-red-50'
-                    }`}
-                  >
-                    <Heart
-                      size={18}
-                      fill={wishlistItems.includes(product._id) ? 'currentColor' : 'none'}
-                    />
-                  </button>
+              <div className="p-3 flex flex-col flex-grow">
+                <h3 className="font-medium text-gray-800 text-sm truncate">{product.name}</h3>
+                <p className="hidden md:block text-xs text-gray-500 line-clamp-2 mt-1 mb-2">{product.description}</p>
+                <div className="mt-auto">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-blue-600 font-bold text-sm">₹{product.price}</span>
+                    {product.requiresPrescription && (
+                      <span className="text-[10px] bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded">
+                        Rx
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex gap-1">
+                    <button
+                      onClick={() => addToCart(product._id)}
+                      disabled={product.stock === 0 || loadingCartItems.includes(product._id)}
+                      className={`flex-1 py-1.5 rounded text-sm flex items-center justify-center ${
+                        product.stock > 0
+                          ? 'bg-blue-600 text-white hover:bg-blue-700'
+                          : 'bg-gray-200 text-gray-500 cursor-not-allowed'
+                      }`}
+                    >
+                      {loadingCartItems.includes(product._id) 
+                        ? 'Adding...' 
+                        : product.stock > 0 
+                          ? 'Add' 
+                          : 'Out of Stock'
+                      }
+                    </button>
+                    <button
+                      onClick={() => toggleWishlist(product._id)}
+                      className={`p-1.5 rounded ${
+                        wishlistItems.includes(product._id)
+                          ? 'text-red-600 bg-red-50'
+                          : 'text-gray-400 hover:text-red-600 hover:bg-red-50'
+                      }`}
+                    >
+                      <Heart
+                        size={16}
+                        fill={wishlistItems.includes(product._id) ? 'currentColor' : 'none'}
+                      />
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -228,17 +257,18 @@ export default function ProductPage() {
             <p className="text-gray-500">No products found</p>
           </div>
         )}
-        <div className='bottom-0 right-1'>
-        <Link 
-          href="/cart"
-          className=" flex items-center gap-2 bg-gradient-to-r from-cyan-600 to-blue-400 hover:from-blue-400 hover:to-cyan-500
-                     text-white px-6 py-3 rounded-lg shadow-lg hover:shadow-xl  sm:m-[50px]  sm:px-8 sm:py-2 md:mx-50 md:my:20 md:px-12 
-                     md:py-3 lg:ml-240 lg:mr-5 lg:mt-5 lg:py-4"
-        >
-          <ShoppingCart size={24} className="sm:w-5 md:w-6" />
-          <span className="font-medium sm:text-sm md:text-base">View Cart</span>
-        </Link>
 
+        {/* View Cart Button */}
+        <div className="mt-8 mb-6 flex justify-end">
+          <Link 
+            href="/cart"
+            className="flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700
+                     text-white px-6 py-3 rounded-lg shadow-md hover:shadow-lg
+                     transition-all duration-300 ease-in-out w-full sm:w-auto"
+          >
+            <ShoppingCart size={20} />
+            <span className="font-medium">View Cart</span>
+          </Link>
         </div>
       </div>
     </div>

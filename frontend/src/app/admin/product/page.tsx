@@ -62,7 +62,7 @@ export default function ProductsPage() {
     expiryDate: ''
   })
 
-  const categories = ['Pain Relief', 'Vitamins', 'Antibiotics', 'First Aid', 'Skincare']
+  const categories = ['Pain Relief', 'Vitamins', 'Antibiotics', 'First Aid', 'Skincare', 'Diabetes', 'Personal Care', 'Other']
 
   const resetForm = () => {
     setFormData({

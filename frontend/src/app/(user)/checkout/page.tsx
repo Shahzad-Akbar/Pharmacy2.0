@@ -45,6 +45,79 @@ export default function CheckoutPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([])
   const [loading, setLoading] = useState(true)
   const [submitting, setSubmitting] = useState(false)
+  // const [paymentMethod, setPaymentMethod] = useState('COD')
+  // const [formData, setFormData] = useState({
+  //   name: '',
+  //   phone: '',
+  //   address: '',
+  //   city: '',
+  //   state: '',
+  //   pincode: '',
+  //   deliveryTime: 'morning',
+  //   paymentScreenshot: null as File | null  // Correct type definition
+  // })
+  const [formErrors, setFormErrors] = useState({
+    name: '',
+    phone: '',
+    address: '',
+    city: '',
+    state: '',
+    pincode: '',
+  });
+
+  const validateForm = () => {
+    const errors = {
+      name: '',
+      phone: '',
+      address: '',
+      city: '',
+      state: '',
+      pincode: '',
+    };
+    let isValid = true;
+
+    if (!formData.name.trim()) {
+      errors.name = 'Full name is required';
+      isValid = false;
+    }
+
+    if (!/^[\d]{10}$/.test(formData.phone)) {
+      errors.phone = 'Phone number must be 10 digits';
+      isValid = false;
+    }
+
+    if (!formData.address.trim()) {
+      errors.address = 'Delivery address is required';
+      isValid = false;
+    }
+
+    if (!formData.city.trim()) {
+      errors.city = 'City is required';
+      isValid = false;
+    }
+
+    if (!formData.state.trim()) {
+      errors.state = 'State is required';
+      isValid = false;
+    }
+
+    if (!/^[\d]{6}$/.test(formData.pincode)) {
+      errors.pincode = 'Pincode must be 6 digits';
+      isValid = false;
+    }
+
+    setFormErrors(errors);
+    return isValid;
+  };
+
+  const handleNextStep = () => {
+    if (step === 1) {
+      if (validateForm()) {
+        setStep(2);
+      }
+    }
+  };
+
   const [paymentMethod, setPaymentMethod] = useState('COD')
   const [formData, setFormData] = useState({
     name: '',
@@ -292,7 +365,7 @@ export default function CheckoutPage() {
 
                 {/* Address */}
                 <div>
-                  <label className="block text-sm font-medium mb-1">Delivery Address</label>
+                  <label className="block text-sm font-medium mb-1">Delivery Full Address with Landmark</label>
                   <div className="flex items-start">
                     <MapPin size={20} className="text-gray-400 mr-2 mt-2" />
                     <textarea
@@ -360,15 +433,8 @@ export default function CheckoutPage() {
                 </div>
 
                 <button
-                  type="button"
-                  onClick={() => {
-                    if (!formData.name || !formData.phone || !formData.address || !formData.city || !formData.state || !formData.pincode) {
-                      toast.error('Please fill in all delivery details')
-                      return
-                    }
-                    setStep(2)
-                  }}
-                  className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
+                  onClick={handleNextStep}
+                  className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
                 >
                   Continue to Payment
                 </button>
