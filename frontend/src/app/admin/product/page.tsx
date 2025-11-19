@@ -26,6 +26,7 @@ interface Product {
   image: string
   isPublished: boolean
   requiresPrescription: boolean
+  discount: number
   stock: number
   manufacturer: string
   expiryDate: string
@@ -37,6 +38,7 @@ interface ProductFormData {
   price: string
   description: string
   image: string
+  discount: string
   stock: string
   requiresPrescription: boolean
   manufacturer: string
@@ -56,6 +58,7 @@ export default function ProductsPage() {
     price: '',
     description: '',
     image: '',
+    discount: '',
     stock: '',
     requiresPrescription: false,
     manufacturer: '',
@@ -71,6 +74,7 @@ export default function ProductsPage() {
       price: '',
       description: '',
       image: '',
+      discount: '',
       stock: '',
       requiresPrescription: false,
       manufacturer: '',
@@ -121,6 +125,7 @@ export default function ProductsPage() {
       price: product.price.toString(),
       description: product.description,
       image: product.image,
+      discount: product.discount.toString(),
       stock: product.stock.toString(),
       requiresPrescription: product.requiresPrescription,
       manufacturer: product.manufacturer,
@@ -156,7 +161,8 @@ export default function ProductsPage() {
       const productData = {
         ...formData,
         price: parseFloat(formData.price),
-        stock: parseInt(formData.stock)
+        stock: parseInt(formData.stock),
+        discount: parseInt(formData.discount)
       }
       const token = localStorage.getItem('token')
       if (!token) {
@@ -405,6 +411,17 @@ export default function ProductsPage() {
                     className="text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                     required
                     min="0"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Discount</label>
+                  <input
+                    type="number"
+                    name="discount"
+                    value={formData.discount}
+                    onChange={handleInputChange}
+                    className="text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                   />
                 </div>
 

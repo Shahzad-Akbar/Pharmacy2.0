@@ -4,7 +4,7 @@ import { v2 as cloudinary } from "cloudinary";
 // Create new product
 export const createProduct = async (req, res) => {
     try {
-        const { name, description, price, category, stock, requiresPrescription, manufacturer, expiryDate } = req.body;
+        const { name, description, price, category, discount, stock, requiresPrescription, manufacturer, expiryDate } = req.body;
         let { image } = req.body;
 
         if (image) {
@@ -18,6 +18,7 @@ export const createProduct = async (req, res) => {
             price,
             category,
             image,
+            discount,
             stock,
             requiresPrescription,
             manufacturer,
