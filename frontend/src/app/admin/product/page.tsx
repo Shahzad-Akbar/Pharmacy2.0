@@ -22,6 +22,7 @@ interface Product {
   name: string
   category: string
   price: number
+  mrp: number
   description: string
   image: string
   isPublished: boolean
@@ -36,6 +37,7 @@ interface ProductFormData {
   name: string
   category: string
   price: string
+  mrp: string
   description: string
   image: string
   discount: string
@@ -56,6 +58,7 @@ export default function ProductsPage() {
     name: '',
     category: '',
     price: '',
+    mrp: '',
     description: '',
     image: '',
     discount: '',
@@ -72,6 +75,7 @@ export default function ProductsPage() {
       name: '',
       category: '',
       price: '',
+      mrp: '',
       description: '',
       image: '',
       discount: '',
@@ -123,6 +127,7 @@ export default function ProductsPage() {
       name: product.name,
       category: product.category,
       price: product.price.toString(),
+      mrp: product.mrp.toString(),
       description: product.description,
       image: product.image,
       discount: product.discount.toString(),
@@ -161,6 +166,7 @@ export default function ProductsPage() {
       const productData = {
         ...formData,
         price: parseFloat(formData.price),
+        mrp: parseFloat(formData.mrp),
         stock: parseInt(formData.stock),
         discount: parseInt(formData.discount)
       }
@@ -286,38 +292,56 @@ export default function ProductsPage() {
 
       {/* Products Grid */}
       {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+  <div className="flex justify-center items-center h-64">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+  </div>
+) : (
+  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    {products.map((product) => (
+      <div key={product._id} className="bg-white rounded-lg shadow-sm overflow-hidden">
+        <div className="relative h-48 bg-gray-100">
+          {product.image ? (
+            <img
+              src={product.image}
+              alt={product.name}
+              className="object-cover w-full h-full"
+            />
+          ) : (
+            <div className="flex items-center justify-center h-full">
+              {/* Placeholder for no image */}
+              <span className="text-gray-300 text-3xl">No Image</span>
+            </div>
+          )}
         </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {products.map((product) => (
-            <div key={product._id} className="bg-white rounded-lg shadow-sm overflow-hidden">
-              <div className="relative h-48 bg-gray-100">
-                {product.image ? (
-                  <Image
-                    src={product.image}
-                    alt={product.name}
-                    fill
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="flex items-center justify-center h-full">
-                    <ImageIcon size={48} className="text-gray-300" />
-                  </div>
-                )}
-              </div>
-              <div className="p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-medium text-gray-800">{product.name}</h3>
-                  <span className="text-blue-600 font-bold">₹{product.price}</span>
-                </div>
-                <p className="text-sm text-gray-500 mb-4">{product.description}</p>
-                <div className="flex items-center justify-between">
-                  <span className={`text-sm px-2 py-1 rounded-full ${product.isPublished ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-                    {product.isPublished ? 'Published' : 'Draft'}
-                  </span>
-                  <div className="flex gap-2">
+        <div className="p-4">
+          {/* Discount Section */}
+          <div className="font-bold text-lg text-gray-900 mb-2 tracking-wide">
+            {product.name}
+          </div>
+          <div className="flex items-center justify-between mb-3">
+  {/* Left Side: MRP + Price */}
+  <div className="flex items-baseline gap-3">
+    <span className="text-xl text-gray-400 line-through">
+      ₹{product.mrp}
+    </span>
+
+    <span className="text-2xl font-bold text-gray-900">
+      ₹{product.price}
+    </span>
+  </div>
+
+  {/* Right Side: Discount */}
+  <span className="bg-green-500 text-white font-semibold px-3 py-1 rounded">
+    {product.discount}% OFF
+  </span>
+</div>
+
+          <p className="text-sm text-gray-500 mb-4">{product.description}</p>
+          <div className="flex items-center justify-between">
+            <span className={`text-sm px-2 py-1 rounded-full ${product.isPublished ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
+              {product.isPublished ? 'Published' : 'Draft'}
+            </span>
+            <div className="flex gap-2">
                     <button 
                       onClick={() => handleEdit(product)}
                       className="p-2 text-blue-600 hover:bg-blue-50 rounded"
@@ -331,13 +355,12 @@ export default function ProductsPage() {
                       <Trash2 size={18} />
                     </button>
                   </div>
-                </div>
-              </div>
-            </div>
-          ))}
+          </div>
         </div>
-      )}
-
+      </div>
+    ))}
+  </div>
+)}
       {/* Add/Edit Product Modal */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
@@ -393,6 +416,20 @@ export default function ProductsPage() {
                     type="number"
                     name="price"
                     value={formData.price}
+                    onChange={handleInputChange}
+                    className="text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    required
+                    min="0"
+                    step="0.01"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Actual MRP</label>
+                  <input
+                    type="number"
+                    name="mrp"
+                    value={formData.mrp}
                     onChange={handleInputChange}
                     className="text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
                     required

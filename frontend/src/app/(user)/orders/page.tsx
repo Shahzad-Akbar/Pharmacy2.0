@@ -1,14 +1,16 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Package, Truck, CheckCircle, Clock, AlertCircle, ArrowLeft, Edit, Trash2, X } from 'lucide-react'
+import { Package, Truck, CheckCircle, Clock, AlertCircle, ArrowLeft, Edit, Trash2, X, Star, ChevronRight } from 'lucide-react'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 
 interface OrderItem {
   product: {
     _id: string
     name: string
     price: number
+    image: string
   }
   quantity: number
   price: number
@@ -40,6 +42,21 @@ interface ShippingAddressForm {
   city: string
   state: string
   pincode: string
+}
+
+const StarRating = ({ rating }: { rating: number }) => {
+  const totalStars = 5
+  return (
+    <div className="flex items-center">
+      {[...Array(totalStars)].map((_, index) => (
+        <Star
+          key={index}
+          size={20}
+          className={index < rating ? 'text-green-500 fill-current' : 'text-gray-300'}
+        />
+      ))}
+    </div>
+  )
 }
 
 export default function OrdersPage() {
@@ -81,10 +98,12 @@ export default function OrdersPage() {
           estimatedDate.setDate(orderDate.getDate() + 7) // Add 7 days
           order.estimatedDeliveryDate = estimatedDate.toISOString()
         }
+        // Ensure items have a product property
+        order.items = order.items.filter(item => item.product)
         return order
       })
-      
-      setOrders(processedOrders)
+
+      setOrders(processedOrders.sort((a: Order, b: Order) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()))
       setError('')
     } catch (err) {
       console.error('Error fetching orders:', err)
@@ -100,7 +119,7 @@ export default function OrdersPage() {
         return <CheckCircle className="text-green-500" size={20} />
       case 'in-transit':
         return <Truck className="text-blue-500" size={20} />
-      case 'processing':
+      case 'pending':
         return <Clock className="text-yellow-500" size={20} />
       case 'cancelled':
         return <AlertCircle className="text-red-500" size={20} />
@@ -218,7 +237,7 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 bg-cyan-100">
+    <div className="container mx-auto px-4 py-8 bg-gray-50 min-h-screen">
       <div className="max-w-4xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold flex items-center gap-2 text-gray-800">
@@ -235,74 +254,79 @@ export default function OrdersPage() {
         </div>
 
         {loading ? (
-          <div className="text-center py-8">
-            <p>Loading your orders...</p>
+          <div className="text-center py-12">
+            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading your orders...</p>
           </div>
         ) : error ? (
-          <div className="bg-red-50 text-red-600 p-4 rounded-lg text-center">
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg text-center">
             {error}
           </div>
         ) : orders.length === 0 ? (
-          <div className="bg-white rounded-lg p-8 text-center">
-            <p className="text-gray-600">You haven&apos;t placed any orders yet.</p>
+          <div className="bg-white rounded-lg p-8 text-center shadow-sm">
+            <Package size={48} className="mx-auto text-gray-300 mb-4" />
+            <p className="text-gray-600 text-lg">You haven&apos;t placed any orders yet.</p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="space-y-6">
             {orders.map((order) => (
-              <div key={order._id} className="bg-white rounded-lg p-6">
-                <div className="flex justify-between items-start mb-4">
-                  <div>
-                    <h3 className="font-medium text-gray-800">Order #{order._id.substring(0, 6)}</h3>
-                    <p className="text-sm text-gray-500">Placed on {formatDate(order.createdAt)}</p>
+              <div key={order._id} className="bg-white rounded-lg shadow-sm overflow-hidden">
+                <div className="p-4 border-b bg-gray-50">
+                  <div className="flex justify-between items-center">
+                    <div>
+                      <h3 className="font-bold text-gray-800">Order #{order._id.substring(0, 8)}</h3>
+                      <p className="text-sm text-gray-500">Placed on {formatDate(order.createdAt)}</p>
+                    </div>
+                    <div className="flex items-center gap-2 text-sm font-medium">
+                      {getStatusIcon(order.status)}
+                      <span className="text-gray-800">
+                        {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                      </span>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    {getStatusIcon(order.status)}
-                    <span className="text-sm font-medium text-gray-800">
-                      {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
-                    </span>
-                  </div>
-                </div>
-                
-                {/* Product list */}
-                <div className="mb-3 bg-gray-50 p-3 rounded-md">
-                  <h4 className="text-sm font-medium text-gray-700 mb-2">Products:</h4>
-                  <ul className="space-y-1">
-                    {order.items.map((item, index) => (
-                      <li key={index} className="text-sm text-gray-600 flex justify-between">
-                        <span>
-                          {item.product ? item.product.name : 'Product Unavailable'} × {item.quantity}
-                        </span>
-                        <span>₹{item.price * item.quantity}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                
-                <div className="flex justify-between text-sm text-gray-600">
-                  <p>{getItemsText(order.items)}</p>
-                  <p className="font-medium">₹{order.total}</p>
-                </div>
-                
-                <div className="mt-4 pt-4 border-t space-y-2">
-                  <p className="text-sm text-gray-600">{getTrackingText(order)}</p>
-                  <p className="text-sm text-gray-600">
-                    <span className="font-medium">Expected delivery:</span> {formatDate(order.estimatedDeliveryDate)}
-                  </p>
                 </div>
 
-                {/* Action buttons */}
+                <div className="divide-y">
+                  {order.items.map((item, index) => (
+                    <div
+                      key={index}
+                      className="p-4 flex items-start sm:items-center gap-4"
+                    >
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 bg-gray-100 rounded-md">
+                        <Image
+                          src={item.product.image || '/product/removed.png'}
+                          alt={item.product.name}
+                          width={80}
+                          height={80}
+                          className="object-cover w-full h-full rounded-md"
+                        />
+                      </div>
+                      <div className="flex-grow">
+                        <p className="font-semibold text-gray-800">
+                          {item.product.name}
+                        </p>
+                        <p className="text-sm text-gray-600 mt-1">
+                          {order.status === 'delivered'
+                            ? `Delivered on ${formatDate(order.createdAt)}` // You might want to use a dedicated 'deliveredAt' field if available
+                            : `Expected by ${formatDate(order.estimatedDeliveryDate)}`}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
                 {canUpdateOrder(order) && (
-                  <div className="mt-4 pt-4 border-t flex gap-2">
+                  <div className="p-4 bg-gray-50 border-t flex flex-col sm:flex-row gap-2">
                     <button
                       onClick={() => handleUpdateClick(order)}
-                      className="flex items-center gap-1 bg-blue-100 text-blue-700 px-3 py-1.5 rounded hover:bg-blue-200 transition-colors text-sm"
+                      className="flex items-center justify-center gap-1 bg-blue-100 text-blue-700 px-3 py-1.5 rounded hover:bg-blue-200 transition-colors text-sm font-medium"
                     >
                       <Edit size={14} />
                       Update Address
                     </button>
                     <button
                       onClick={() => handleCancelClick(order)}
-                      className="flex items-center gap-1 bg-red-100 text-red-700 px-3 py-1.5 rounded hover:bg-red-200 transition-colors text-sm"
+                      className="flex items-center justify-center gap-1 bg-red-100 text-red-700 px-3 py-1.5 rounded hover:bg-red-200 transition-colors text-sm font-medium"
                     >
                       <Trash2 size={14} />
                       Cancel Order

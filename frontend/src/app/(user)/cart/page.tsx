@@ -14,9 +14,10 @@ interface CartItem {
     price: number
     image: string
     stock: number
+    mrp?: number
+    discount?: number
   }
   quantity: number
-  price: number
 }
 
 export default function CartPage() {
@@ -36,24 +37,22 @@ export default function CartPage() {
         const response = await axios.get('/api/cart', {
           headers: { Authorization: `Bearer ${token}` }
         });
-        // Update to match backend structure
-        const items = response.data?.items || [];
-        setCartItems(items);
-        setLoading(false);
-      } catch(error) {
-        console.error("Error in fetch Product", error);
+        const items = response.data?.items || []
+        setCartItems(items)
+      } catch (error) {
+        console.error("Error in fetch Product", error)
         setError('Failed to fetch cart items')
+      } finally {
         setLoading(false)
       }
     }
     fetchCartItems()
   }, [])
 
-  // Update subtotal calculation to use product price instead of item price
   const subtotal = cartItems.reduce((sum, item) => {
-    if (!item.product) return sum;
-    return sum + (item.product.price * item.quantity);
-  }, 0);
+    if (!item.product) return sum
+    return sum + item.product.price * item.quantity
+  }, 0)
   const deliveryCharge = 40
   const total = subtotal + deliveryCharge
   
@@ -65,14 +64,20 @@ export default function CartPage() {
         return
       }
 
-      await axios.put('/api/cart/update', 
+      if (newQuantity < 1) {
+        removeItem(productId)
+        return
+      }
+
+      await axios.put(
+        '/api/cart/update',
         { productId, quantity: newQuantity },
         { headers: { Authorization: `Bearer ${token}` } }
       )
-      
-      setCartItems(prevItems => 
-        prevItems.map(item => 
-          item.product._id === productId 
+
+      setCartItems(prevItems =>
+        prevItems.map(item =>
+          item.product._id === productId
             ? { ...item, quantity: newQuantity }
             : item
         )
@@ -104,33 +109,23 @@ export default function CartPage() {
     }
   }
 
-  
-
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-16 text-center bg-cyan-50">
-        <ShoppingBag size={64} className="mx-auto text-gray-300 mb-4" />
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Your cart is empty</h2>
-        <p className="text-gray-600 mb-8">Looks like you haven&apos;t added any items to your cart yet.</p>
-        <Link 
-          href="/product" 
-          className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
-        >
-          Continue Shopping
-          <ArrowRight size={20} />
-        </Link>
+      <div className="container mx-auto px-4 py-16 text-center">
+        <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-600 mx-auto"></div>
+        <p className="mt-4 text-gray-600">Loading your cart...</p>
       </div>
     )
   }
 
   if (error) {
     return (
-      <div className="container mx-auto px-4 py-16 text-center bg-cyan-50">
-        <ShoppingBag size={64} className="mx-auto text-gray-300 mb-4" />
-        <h2 className="text-2xl font-bold text-gray-800 mb-4">Your cart is empty</h2>
-        <p className="text-gray-600 mb-8">Looks like you haven&apos;t added any items to your cart yet.</p>
-        <Link 
-          href="/product" 
+      <div className="container mx-auto px-4 py-16 text-center bg-red-50 border border-red-200 rounded-lg">
+        <ShoppingBag size={64} className="mx-auto text-red-400 mb-4" />
+        <h2 className="text-2xl font-bold text-red-800 mb-4">Oops! Something went wrong.</h2>
+        <p className="text-red-600 mb-8">{error}</p>
+        <Link
+          href="/product"
           className="inline-flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700"
         >
           Continue Shopping
@@ -168,9 +163,13 @@ export default function CartPage() {
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Cart Items */}
           <div className="flex-grow space-y-4">
-            {cartItems.map((item) => (
-              <div key={item._id} className="bg-white rounded-lg p-4 flex items-center gap-4">
-                <div className="w-20 h-20 bg-gray-100 rounded-md">
+            {cartItems.map(item => (
+              <div
+                key={item._id}
+                className="bg-white rounded-lg p-4 flex flex-col sm:flex-row gap-4 items-start w-full"
+              >
+                {/* Image */}
+                <div className="w-24 h-24 sm:w-20 sm:h-20 bg-gray-100 rounded-md self-center sm:self-start flex-shrink-0">
                   {item.product ? (
                     <Image
                       src={item.product.image}
@@ -181,42 +180,66 @@ export default function CartPage() {
                     />
                   ) : (
                     <div className="w-full h-full flex items-center justify-center text-gray-400">
-                      Product Unavailable
+                      No Image
                     </div>
                   )}
                 </div>
-                <div className="flex-grow">
-                  <h3 className="font-medium text-gray-800">
-                    {item.product ? item.product.name : 'Product Unavailable'}
-                  </h3>
-                  <p className="text-blue-600 font-bold">
-                    ₹{item.product ? item.product.price : 0}
-                  </p>
+
+                {/* Details */}
+                <div className="flex-grow w-full">
+                  <div className="flex justify-between items-start">
+                    <h3 className="font-medium text-gray-800 pr-4">
+                      {item.product ? item.product.name : 'Product Unavailable'}
+                    </h3>
+                    <button
+                      onClick={() => item.product && removeItem(item.product._id)}
+                      className="p-1 rounded text-red-600 hover:bg-red-50 flex-shrink-0"
+                      disabled={!item.product}
+                    >
+                      <Trash2 size={20} />
+                    </button>
+                  </div>
+
+                  {/* Price Info */}
+                  <div className="flex items-baseline gap-2 mt-1">
+                    <p className="text-blue-600 font-bold text-lg">
+                      ₹{item.product ? item.product.price.toFixed(2) : '0.00'}
+                    </p>
+                    {item.product?.mrp && item.product.mrp > item.product.price && (
+                      <p className="text-gray-500 line-through text-sm">
+                        MRP ₹{item.product.mrp.toFixed(2)}
+                      </p>
+                    )}
+                  </div>
+                  {item.product?.discount && item.product.discount > 0 && (
+                    <p className="text-green-600 font-semibold text-sm mt-1">
+                      You save {item.product.discount}%
+                    </p>
+                  )}
+
+                  {/* Quantity Controls */}
+                  <div className="flex items-center gap-2 mt-4">
+                    <button
+                      onClick={() =>
+                        item.product && updateQuantity(item.product._id, item.quantity - 1)
+                      }
+                      className="p-1 rounded bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      disabled={!item.product || item.quantity <= 1}
+                    >
+                      <Minus size={16} />
+                    </button>
+                    <span className="w-8 text-center text-gray-800">{item.quantity}</span>
+                    <button
+                      onClick={() =>
+                        item.product && updateQuantity(item.product._id, item.quantity + 1)
+                      }
+                      className="p-1 rounded bg-gray-100 text-gray-600 hover:bg-gray-200"
+                      disabled={!item.product || item.quantity >= item.product.stock}
+                    >
+                      <Plus size={16} />
+                    </button>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => item.product ? updateQuantity(item.product._id, item.quantity - 1) : null}
-                    className="p-1 rounded bg-gray-100 text-gray-600 hover:bg-gray-200"
-                    disabled={!item.product || item.quantity <= 1}
-                  >
-                    <Minus size={16} />
-                  </button>
-                  <span className="w-8 text-center text-gray-800">{item.quantity}</span>
-                  <button
-                    onClick={() => item.product ? updateQuantity(item.product._id, item.quantity + 1) : null}
-                    className="p-1 rounded bg-gray-100 text-gray-600 hover:bg-gray-200"
-                    disabled={!item.product || item.quantity >= item.product.stock}
-                  >
-                    <Plus size={16} />
-                  </button>
-                </div>
-                <button
-                  onClick={() => item.product ? removeItem(item.product._id) : null}
-                  className="p-2 rounded text-red-600 hover:bg-red-50"
-                  disabled={!item.product}
-                >
-                  <Trash2 size={20} />
-                </button>
               </div>
             ))}
           </div>

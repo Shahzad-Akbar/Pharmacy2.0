@@ -99,7 +99,7 @@ export default function UserDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-cyan-300">
+    <div className="min-h-screen bg-cyan-300 overflow-x-hidden">
       {/* Header */}
       <header className="bg-gradient-to-r from-blue-500 to-cyan-300 pt-2 ">
         <div className="container mx-auto px-4">
@@ -109,8 +109,8 @@ export default function UserDashboard() {
       </header>
 
       {/* Image Carousel */}
-      <div className="relative w-full h-[400px] mb-8 bg-gray-100">
-        <div className="absolute inset-0 flex transition-transform duration-500 ease-in-out"
+      <div className="relative w-full h-[400px] mb-8 bg-gray-100 overflow-hidden">
+        <div className="absolute inset-0 flex w-full h-full transition-transform duration-500 ease-in-out"
              style={{ transform: `translateX(-${currentImageIndex * 100}%)` }}>
           {carouselImages.map((image, index) => (
             <div key={index} className="relative w-full h-full flex-shrink-0 flex items-center justify-center">

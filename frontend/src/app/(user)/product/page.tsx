@@ -7,14 +7,16 @@ import toast from 'react-hot-toast'
 import Link from 'next/link'
 
 interface Product {
-  _id: string
-  name: string
-  price: number
-  description: string
-  category: string
-  image: string
-  requiresPrescription: boolean
-  stock: number
+  _id: string;
+  name: string;
+  price: number;
+  mrp: number;
+  discount: number;
+  description: string;
+  category: string;
+  image: string;
+  requiresPrescription: boolean;
+  stock: number;
 }
 
 export default function ProductPage() {
@@ -192,36 +194,44 @@ export default function ProductPage() {
         </div>
 
         {/* Products Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
-          {filteredProducts.map((product) => (
-            <div key={product._id} className="bg-white rounded-lg shadow-sm overflow-hidden flex flex-col">
-              <div className="relative h-32 sm:h-40">
-                <Image
-                  src={product.image}
-                  alt={product.name}
-                  fill
-                  className="object-contain"
-                />
-              </div>
-              <div className="p-3 flex flex-col flex-grow">
-                <h3 className="font-medium text-gray-800 text-sm truncate">{product.name}</h3>
-                <p className="hidden md:block text-xs text-gray-500 line-clamp-2 mt-1 mb-2">{product.description}</p>
-                <div className="mt-auto">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-blue-600 font-bold text-sm">₹{product.price}</span>
-                    {product.requiresPrescription && (
-                      <span className="text-[10px] bg-yellow-100 text-yellow-800 px-1.5 py-0.5 rounded">
-                        Rx
-                      </span>
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 mb-8">
+          {filteredProducts.map((product) => {
+            const discountedPrice = product.price - (product.price * (product.discount / 100));
+
+            return (
+              <div key={product._id} className="bg-white rounded-lg shadow-sm overflow-hidden flex flex-col p-3 border border-gray-200">
+                <div className="relative h-32 sm:h-40 w-full mb-2">
+                  {product.discount > 0 && (
+                      <div className="absolute top-0 left-0 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-br-lg z-10">
+                        {product.discount}% OFF
+                      </div>
                     )}
+                  <Image
+                    src={product.image}
+                    alt={product.name}
+                    fill
+                    className="object-contain"
+                  />
+                </div>
+                <div className="flex flex-col flex-grow mt-2">
+                  <h3 className="font-semibold text-gray-800 text-sm sm:text-base truncate mb-2">{product.name}</h3>
+                  
+                  <div className="my-1">
+                    {product.discount > 0 && (
+                        <p className="text-gray-500 text-xs sm:text-sm">
+                          MRP <span className="line-through">₹{product.price.toFixed(2)}</span>
+                        </p>
+                    )}
+                    <p className="text-gray-800 font-bold text-md sm:text-lg">₹{discountedPrice.toFixed(2)}</p>
                   </div>
-                  <div className="flex gap-1">
+
+                  <div className="mt-auto flex gap-2 pt-2">
                     <button
                       onClick={() => addToCart(product._id)}
                       disabled={product.stock === 0 || loadingCartItems.includes(product._id)}
-                      className={`flex-1 py-1.5 rounded text-sm flex items-center justify-center ${
+                      className={`w-full py-2 rounded-md text-sm sm:text-base font-semibold flex items-center justify-center transition-colors ${
                         product.stock > 0
-                          ? 'bg-blue-600 text-white hover:bg-blue-700'
+                          ? 'bg-blue-100 text-blue-600 border border-blue-300 hover:bg-blue-200'
                           : 'bg-gray-200 text-gray-500 cursor-not-allowed'
                       }`}
                     >
@@ -232,24 +242,11 @@ export default function ProductPage() {
                           : 'Out of Stock'
                       }
                     </button>
-                    <button
-                      onClick={() => toggleWishlist(product._id)}
-                      className={`p-1.5 rounded ${
-                        wishlistItems.includes(product._id)
-                          ? 'text-red-600 bg-red-50'
-                          : 'text-gray-400 hover:text-red-600 hover:bg-red-50'
-                      }`}
-                    >
-                      <Heart
-                        size={16}
-                        fill={wishlistItems.includes(product._id) ? 'currentColor' : 'none'}
-                      />
-                    </button>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
         {filteredProducts.length === 0 && (

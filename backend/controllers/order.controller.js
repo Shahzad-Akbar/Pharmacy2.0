@@ -46,7 +46,7 @@ export const getAllOrders = async (req, res) => {
     try {
         const orders = await Order.find()
             .populate('user', 'name email')
-            .populate('items.product', 'name price');
+            .populate('items.product', 'name price image');
         res.status(200).json(orders);
     } catch (error) {
         res.status(500).json({ error: error.message });
@@ -57,7 +57,7 @@ export const getAllOrders = async (req, res) => {
 export const getUserOrders = async (req, res) => {
     try {
         const orders = await Order.find({ user: req.user._id })
-            .populate('items.product', 'name price');
+            .populate('items.product', 'name price image');
         res.status(200).json(orders);
     } catch (error) {
         res.status(500).json({ error: error.message });
