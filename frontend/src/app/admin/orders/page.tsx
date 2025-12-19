@@ -8,6 +8,7 @@ import {
   Eye,
   CheckCircle,
   CreditCard,
+  Printer,
   X
 } from 'lucide-react'
 import toast from 'react-hot-toast'
@@ -57,6 +58,7 @@ export default function OrdersPage() {
   const [showDetailsModal, setShowDetailsModal] = useState(false)
   const [showStatusModal, setShowStatusModal] = useState(false)
   const [showPaymentModal, setShowPaymentModal] = useState(false)
+  const [showInvoiceModal, setShowInvoiceModal] = useState(false)
   const [trackingInfo, setTrackingInfo] = useState('')
   const [newStatus, setNewStatus] = useState('')
   const [newPaymentStatus, setNewPaymentStatus] = useState('')
@@ -252,37 +254,47 @@ export default function OrdersPage() {
 
               {/* Order Actions */}
               <div className="flex items-center gap-2">
-                <button 
-                  onClick={() => {
-                    setSelectedOrder(order)
-                    setShowDetailsModal(true)
-                  }}
-                  className="p-2 text-blue-600 hover:bg-blue-50 rounded"
-                >
-                  <Eye size={20} />
-                </button>
-                <button 
-                  onClick={() => {
-                    setSelectedOrder(order)
-                    setNewStatus(order.status)
-                    setShowStatusModal(true)
-                  }}
-                  className="p-2 text-green-600 hover:bg-green-50 rounded"
-                >
-                  <CheckCircle size={20} />
-                </button>
-                <button 
-                  onClick={() => {
-                    setSelectedOrder(order)
-                    setNewPaymentStatus(order.paymentStatus)
-                    setShowPaymentModal(true)
-                  }}
-                  className="p-2 text-blue-600 hover:bg-blue-50 rounded"
-                >
-                  <CreditCard size={20} />
-                </button>
-              </div>
+              <button 
+                onClick={() => {
+                  setSelectedOrder(order)
+                  setShowDetailsModal(true)
+                }}
+                className="p-2 text-blue-600 hover:bg-blue-50 rounded"
+              >
+                <Eye size={20} />
+              </button>
+              <button 
+                onClick={() => {
+                  setSelectedOrder(order)
+                  setNewStatus(order.status)
+                  setShowStatusModal(true)
+                }}
+                className="p-2 text-green-600 hover:bg-green-50 rounded"
+              >
+                <CheckCircle size={20} />
+              </button>
+              <button 
+                onClick={() => {
+                  setSelectedOrder(order)
+                  setNewPaymentStatus(order.paymentStatus)
+                  setShowPaymentModal(true)
+                }}
+                className="p-2 text-blue-600 hover:bg-blue-50 rounded"
+              >
+                <CreditCard size={20} />
+              </button>
+              <button
+                onClick={() => {
+                  setSelectedOrder(order)
+                  setShowInvoiceModal(true)
+                }}
+                className="p-2 text-indigo-600 hover:bg-indigo-50 rounded"
+                title="Print Invoice"
+              >
+                <Printer size={20} />
+              </button>
             </div>
+          </div>
 
             {/* Order Details */}
             <div className="mt-4 border-t pt-4">
@@ -473,6 +485,196 @@ export default function OrdersPage() {
           </div>
         </div>
       )}
+
+      {/* Invoice Preview Modal */}
+      {showInvoiceModal && selectedOrder && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-lg max-w-3xl w-full p-6">
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-black text-xl font-semibold">Invoice Preview</h2>
+              <button 
+                onClick={() => setShowInvoiceModal(false)}
+                className="text-red-500 p-2 hover:bg-gray-100 rounded"
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Visible Invoice Layout (for on-screen preview) */}
+            <div className="text-black border rounded p-4">
+              <div className="flex justify-between items-start mb-4">
+                <div>
+                  <h3 className="text-xl font-bold">My Pharmacy</h3>
+                  <p className="text-sm text-gray-600">Invoice</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-sm">Order ID: {selectedOrder._id}</p>
+                  <p className="text-sm">Date: {new Date(selectedOrder.createdAt).toLocaleString()}</p>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                  <h4 className="font-semibold">Customer</h4>
+                  <p>{selectedOrder.shippingAddress.name}</p>
+                  <p>{selectedOrder.shippingAddress.phone}</p>
+                  <p className="text-sm text-gray-700">{selectedOrder.shippingAddress.address}</p>
+                  <p className="text-sm text-gray-700">{selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.state} {selectedOrder.shippingAddress.pincode}</p>
+                </div>
+                <div>
+                  <h4 className="font-semibold">Payment</h4>
+                  <p>Method: {selectedOrder.paymentMethod}</p>
+                  <p>Status: {selectedOrder.paymentStatus}</p>
+                  {selectedOrder.tracking && (
+                    <p>Tracking: {selectedOrder.tracking}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="mb-4">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b">
+                      <th className="text-left py-2">Item</th>
+                      <th className="text-right py-2">Qty</th>
+                      <th className="text-right py-2">Unit Price</th>
+                      <th className="text-right py-2">Line Total</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedOrder.items.map((item, idx) => (
+                      <tr key={idx} className="border-b">
+                        <td className="py-2">{item.product ? item.product.name : 'Unknown Product'}</td>
+                        <td className="py-2 text-right">{item.quantity}</td>
+                        <td className="py-2 text-right">₹{item.product?.price ?? '-'}</td>
+                        <td className="py-2 text-right">₹{item.price}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="flex justify-end">
+                <div className="w-64 text-sm">
+                  <div className="flex justify-between py-1">
+                    <span>Delivery</span>
+                    <span>₹{selectedOrder.deliveryCharge}</span>
+                  </div>
+                  <div className="flex justify-between font-semibold border-t mt-2 pt-2">
+                    <span>Total</span>
+                    <span>₹{selectedOrder.total}</span>
+                  </div>
+                </div>
+              </div>
+
+              {selectedOrder.notes && (
+                <div className="mt-4">
+                  <h4 className="font-semibold">Notes</h4>
+                  <p className="text-sm text-gray-700">{selectedOrder.notes}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-end gap-2 mt-4">
+              <button
+                onClick={() => setShowInvoiceModal(false)}
+                className="text-black px-4 py-2 border rounded hover:bg-gray-50"
+              >
+                Close
+              </button>
+              <button
+                onClick={() => window.print()}
+                className="px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700 flex items-center gap-2"
+              >
+                <Printer size={18} />
+                Print Invoice
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Print-Only Invoice Area */}
+      {selectedOrder && (
+        <div id="print-area" className="hidden">
+          <div className="p-8">
+            <div className="flex justify-between items-start mb-4">
+              <div>
+                <h1 className="text-2xl font-bold">My Pharmacy</h1>
+                <p className="text-sm">Invoice</p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm">Order ID: {selectedOrder._id}</p>
+                <p className="text-sm">Date: {new Date(selectedOrder.createdAt).toLocaleString()}</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <h2 className="font-semibold">Bill To</h2>
+                <p>{selectedOrder.shippingAddress.name}</p>
+                <p>{selectedOrder.shippingAddress.phone}</p>
+                <p>{selectedOrder.shippingAddress.address}</p>
+                <p>{selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.state} {selectedOrder.shippingAddress.pincode}</p>
+              </div>
+              <div>
+                <h2 className="font-semibold">Payment</h2>
+                <p>Method: {selectedOrder.paymentMethod}</p>
+                <p>Status: {selectedOrder.paymentStatus}</p>
+                {selectedOrder.tracking && (
+                  <p>Tracking: {selectedOrder.tracking}</p>
+                )}
+              </div>
+            </div>
+
+            <table className="w-full text-sm mb-4">
+              <thead>
+                <tr>
+                  <th className="text-left py-2">Item</th>
+                  <th className="text-right py-2">Qty</th>
+                  <th className="text-right py-2">Unit Price</th>
+                  <th className="text-right py-2">Line Total</th>
+                </tr>
+              </thead>
+              <tbody>
+                {selectedOrder.items.map((item, idx) => (
+                  <tr key={idx}>
+                    <td className="py-2">{item.product ? item.product.name : 'Unknown Product'}</td>
+                    <td className="py-2 text-right">{item.quantity}</td>
+                    <td className="py-2 text-right">₹{item.product?.price ?? '-'}</td>
+                    <td className="py-2 text-right">₹{item.price}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            <div className="flex justify-end">
+              <div className="w-64 text-sm">
+                <div className="flex justify-between py-1">
+                  <span>Delivery</span>
+                  <span>₹{selectedOrder.deliveryCharge}</span>
+                </div>
+                <div className="flex justify-between font-semibold border-t mt-2 pt-2">
+                  <span>Total</span>
+                  <span>₹{selectedOrder.total}</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-8 text-xs text-gray-700">
+              <p>Thank you for your purchase!</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <style jsx>{`
+        @media print {
+          body * { visibility: hidden; }
+          #print-area, #print-area * { visibility: visible; }
+          #print-area { position: absolute; left: 0; top: 0; width: 100%; }
+        }
+      `}</style>
     </div>
   )
 }

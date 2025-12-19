@@ -24,7 +24,9 @@ interface Product {
   price: number
   mrp: number
   description: string
-  image: string
+  image?: string
+  images: string[]
+  composition: string
   isPublished: boolean
   requiresPrescription: boolean
   discount: number
@@ -39,7 +41,8 @@ interface ProductFormData {
   price: string
   mrp: string
   description: string
-  image: string
+  images: string[]
+  composition: string
   discount: string
   stock: string
   requiresPrescription: boolean
@@ -60,7 +63,8 @@ export default function ProductsPage() {
     price: '',
     mrp: '',
     description: '',
-    image: '',
+    images: [],
+    composition: '',
     discount: '',
     stock: '',
     requiresPrescription: false,
@@ -77,7 +81,8 @@ export default function ProductsPage() {
       price: '',
       mrp: '',
       description: '',
-      image: '',
+      images: [],
+      composition: '',
       discount: '',
       stock: '',
       requiresPrescription: false,
@@ -104,21 +109,44 @@ export default function ProductsPage() {
   const [imageLoading, setImageLoading] = useState(false)
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const files = e.target.files
+    if (!files || files.length === 0) return
+
+    if (formData.images.length + files.length > 4) {
+      toast.error('You can only upload up to 4 images')
+      return
+    }
 
     setImageLoading(true)
-    // Convert image to base64 string
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      const base64String = reader.result as string
-      setFormData(prev => ({
-        ...prev,
-        image: base64String
-      }))
-      setImageLoading(false)
-    }
-    reader.readAsDataURL(file)
+    const newImages: string[] = []
+
+    // Process all selected files
+    const promises = Array.from(files).map(file => {
+      return new Promise<void>((resolve) => {
+        const reader = new FileReader()
+        reader.onloadend = () => {
+          const base64String = reader.result as string
+          newImages.push(base64String)
+          resolve()
+        }
+        reader.readAsDataURL(file)
+      })
+    })
+
+    await Promise.all(promises)
+
+    setFormData(prev => ({
+      ...prev,
+      images: [...prev.images, ...newImages]
+    }))
+    setImageLoading(false)
+  }
+
+  const removeImage = (indexToRemove: number) => {
+    setFormData(prev => ({
+      ...prev,
+      images: prev.images.filter((_, index) => index !== indexToRemove)
+    }))
   }
 
   const handleEdit = (product: Product) => {
@@ -129,12 +157,13 @@ export default function ProductsPage() {
       price: product.price.toString(),
       mrp: product.mrp.toString(),
       description: product.description,
-      image: product.image,
+      images: (product.images && product.images.length > 0) ? product.images : (product.image ? [product.image] : []),
+      composition: product.composition || '',
       discount: product.discount.toString(),
       stock: product.stock.toString(),
       requiresPrescription: product.requiresPrescription,
       manufacturer: product.manufacturer,
-      expiryDate: product.expiryDate
+      expiryDate: product.expiryDate ? new Date(product.expiryDate).toISOString().split('T')[0] : ''
     })
     setShowModal(true)
   }
@@ -251,7 +280,10 @@ export default function ProductsPage() {
           Products Management
         </h1>
         <button 
-          onClick={() => setShowModal(true)}
+          onClick={() => {
+            resetForm()
+            setShowModal(true)
+          }}
           className="bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-700"
         >
           <Plus size={20} />
@@ -298,247 +330,279 @@ export default function ProductsPage() {
 ) : (
   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
     {products.map((product) => (
-      <div key={product._id} className="bg-white rounded-lg shadow-sm overflow-hidden">
-        <div className="relative h-48 bg-gray-100">
-          {product.image ? (
-            <img
-              src={product.image}
-              alt={product.name}
-              className="object-cover w-full h-full"
-            />
-          ) : (
-            <div className="flex items-center justify-center h-full">
-              {/* Placeholder for no image */}
-              <span className="text-gray-300 text-3xl">No Image</span>
+      <div key={product._id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
+        <div className="relative h-48 w-full cursor-pointer" onClick={() => window.location.href = `/admin/productdetails/${product._id}`}>
+          <Image
+            src={(product.images && product.images.length > 0) ? product.images[0] : (product.image ? product.image : '/placeholder.png')}
+            alt={product.name}
+            fill
+            className="object-contain p-4"
+          />
+          {product.discount > 0 && (
+            <div className="absolute top-2 left-2 bg-green-500 text-white text-xs px-2 py-1 rounded-full">
+              {product.discount}% OFF
             </div>
           )}
         </div>
         <div className="p-4">
-          {/* Discount Section */}
-          <div className="font-bold text-lg text-gray-900 mb-2 tracking-wide">
-            {product.name}
-          </div>
-          <div className="flex items-center justify-between mb-3">
-  {/* Left Side: MRP + Price */}
-  <div className="flex items-baseline gap-3">
-    <span className="text-xl text-gray-400 line-through">
-      ₹{product.mrp}
-    </span>
-
-    <span className="text-2xl font-bold text-gray-900">
-      ₹{product.price}
-    </span>
-  </div>
-
-  {/* Right Side: Discount */}
-  <span className="bg-green-500 text-white font-semibold px-3 py-1 rounded">
-    {product.discount}% OFF
-  </span>
-</div>
-
-          <p className="text-sm text-gray-500 mb-4">{product.description}</p>
-          <div className="flex items-center justify-between">
-            <span className={`text-sm px-2 py-1 rounded-full ${product.isPublished ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}`}>
-              {product.isPublished ? 'Published' : 'Draft'}
-            </span>
+          <div className="flex justify-between items-start mb-2">
+            <div>
+              <h3 className="font-semibold text-gray-800 line-clamp-1">{product.name}</h3>
+              <p className="text-sm text-gray-500">{product.category}</p>
+            </div>
             <div className="flex gap-2">
-                    <button 
-                      onClick={() => handleEdit(product)}
-                      className="p-2 text-blue-600 hover:bg-blue-50 rounded"
-                    >
-                      <Edit size={18} />
-                    </button>
-                    <button 
-                      onClick={() => handleDelete(product._id)}
-                      className="p-2 text-red-600 hover:bg-red-50 rounded"
-                    >
-                      <Trash2 size={18} />
-                    </button>
-                  </div>
+              <button 
+                onClick={(e) => { e.stopPropagation(); handleEdit(product); }}
+                className="text-blue-600 hover:text-blue-800 p-1"
+              >
+                <Edit size={18} />
+              </button>
+              <button 
+                onClick={(e) => { e.stopPropagation(); handleDelete(product._id); }}
+                className="text-red-600 hover:text-red-800 p-1"
+              >
+                <Trash2 size={18} />
+              </button>
+            </div>
+          </div>
+          
+          <div className="flex justify-between items-end mt-2">
+            <div>
+              <p className="text-lg font-bold text-blue-600">₹{product.price}</p>
+              {product.mrp > 0 && (
+                <p className="text-sm text-gray-500">MRP <span className={product.mrp > product.price ? 'line-through' : ''}>₹{product.mrp}</span></p>
+              )}
+            </div>
+            <div className={`px-2 py-1 rounded text-xs ${
+              product.stock > 10 ? 'bg-green-100 text-green-700' : 
+              product.stock > 0 ? 'bg-yellow-100 text-yellow-700' : 
+              'bg-red-100 text-red-700'
+            }`}>
+              {product.stock > 10 ? 'In Stock' : product.stock > 0 ? 'Low Stock' : 'Out of Stock'}
+            </div>
           </div>
         </div>
       </div>
     ))}
   </div>
 )}
-      {/* Add/Edit Product Modal */}
+      {/* Modal */}
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full">
-            <div className="flex justify-between items-center mb-4">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 overflow-y-auto">
+          <div className="bg-white rounded-lg w-full max-w-2xl my-8">
+            <div className="p-6 border-b flex justify-between items-center sticky top-0 bg-white rounded-t-lg z-10">
               <h2 className="text-xl font-bold text-gray-800">
                 {editingProduct ? 'Edit Product' : 'Add New Product'}
               </h2>
-              <button
-                onClick={() => {
-                  setShowModal(false)
-                  resetForm()
-                }}
-                className="text-gray-500 hover:text-gray-700"
-              >
+              <button onClick={() => setShowModal(false)} className="text-gray-500 hover:text-gray-700">
                 <X size={24} />
               </button>
             </div>
-
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Name</label>
+            
+            <form onSubmit={handleSubmit} className="p-6 max-h-[80vh] overflow-y-auto">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Product Name</label>
                   <input
                     type="text"
                     name="name"
+                    required
                     value={formData.name}
                     onChange={handleInputChange}
-                    className="text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                    className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-gray-800"
+                  />
+                </div>
+
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
+                  <textarea
+                    name="description"
                     required
+                    rows={3}
+                    value={formData.description}
+                    onChange={handleInputChange}
+                    className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-gray-800"
+                  />
+                </div>
+
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Composition</label>
+                  <textarea
+                    name="composition"
+                    rows={2}
+                    value={formData.composition}
+                    onChange={handleInputChange}
+                    className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-gray-800"
+                    placeholder="e.g. Paracetamol 500mg"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Category</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Category</label>
                   <select
                     name="category"
+                    required
                     value={formData.category}
                     onChange={handleInputChange}
-                    className="text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    required
+                    className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-gray-800"
                   >
                     <option value="">Select Category</option>
-                    {categories.map(category => (
-                      <option key={category} value={category}>{category}</option>
+                    {categories.map(cat => (
+                      <option key={cat} value={cat}>{cat}</option>
                     ))}
                   </select>
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Price</label>
-                  <input
-                    type="number"
-                    name="price"
-                    value={formData.price}
-                    onChange={handleInputChange}
-                    className="text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    required
-                    min="0"
-                    step="0.01"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Actual MRP</label>
-                  <input
-                    type="number"
-                    name="mrp"
-                    value={formData.mrp}
-                    onChange={handleInputChange}
-                    className="text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    required
-                    min="0"
-                    step="0.01"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Stock</label>
-                  <input
-                    type="number"
-                    name="stock"
-                    value={formData.stock}
-                    onChange={handleInputChange}
-                    className="text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    required
-                    min="0"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Discount</label>
-                  <input
-                    type="number"
-                    name="discount"
-                    value={formData.discount}
-                    onChange={handleInputChange}
-                    className="text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700">Manufacturer</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Manufacturer</label>
                   <input
                     type="text"
                     name="manufacturer"
                     value={formData.manufacturer}
                     onChange={handleInputChange}
-                    className="text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    required
+                    className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-gray-800"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-sm font-medium text-gray-700">Expiry Date</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">MRP</label>
+                  <input
+                    type="number"
+                    name="mrp"
+                    required
+                    min="0"
+                    step="0.01"
+                    value={formData.mrp}
+                    onChange={handleInputChange}
+                    className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-gray-800"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Selling Price</label>
+                  <input
+                    type="number"
+                    name="price"
+                    required
+                    min="0"
+                    step="0.01"
+                    value={formData.price}
+                    onChange={handleInputChange}
+                    className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-gray-800"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Discount (%)</label>
+                  <input
+                    type="number"
+                    name="discount"
+                    min="0"
+                    max="100"
+                    value={formData.discount}
+                    onChange={handleInputChange}
+                    className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-gray-800"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Stock</label>
+                  <input
+                    type="number"
+                    name="stock"
+                    required
+                    min="0"
+                    value={formData.stock}
+                    onChange={handleInputChange}
+                    className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-gray-800"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Expiry Date</label>
                   <input
                     type="date"
                     name="expiryDate"
                     value={formData.expiryDate}
                     onChange={handleInputChange}
-                    className="text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    required
+                    className="w-full border rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500 text-gray-800"
                   />
                 </div>
 
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700">Description</label>
-                  <textarea
-                    name="description"
-                    value={formData.description}
-                    onChange={handleInputChange}
-                    rows={3}
-                    className="text-black mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
-                    required
-                  />
-                </div>
-
-                <div className="col-span-2">
-                  <label className="block text-sm font-medium text-gray-700">Image</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="text-black mt-1 block w-full border rounded-lg p-2"
-                  />
-                </div>
-
-                <div className="col-span-2">
-                  <label className="flex items-center">
+                <div className="flex items-center mt-6">
+                  <label className="flex items-center gap-2 cursor-pointer">
                     <input
                       type="checkbox"
-                      name="requiresPrescription"
                       checked={formData.requiresPrescription}
                       onChange={togglePrecription}
-                      className="rounded border-gray-300 text-blue-600 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                      className="w-5 h-5 text-blue-600 rounded focus:ring-blue-500"
                     />
-                    <span className="ml-2 text-sm text-gray-600">Requires Prescription</span>
+                    <span className="text-gray-700">Requires Prescription</span>
                   </label>
+                </div>
+
+                <div className="col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">Product Images (Max 4)</label>
+                  <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-lg hover:border-blue-500 transition-colors">
+                    <div className="space-y-1 text-center">
+                      <ImageIcon className="mx-auto h-12 w-12 text-gray-400" />
+                      <div className="flex text-sm text-gray-600">
+                        <label className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                          <span>Upload files</span>
+                          <input
+                            type="file"
+                            className="sr-only"
+                            accept="image/*"
+                            multiple
+                            onChange={handleImageChange}
+                            disabled={formData.images.length >= 4}
+                          />
+                        </label>
+                        <p className="pl-1">or drag and drop</p>
+                      </div>
+                      <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                    </div>
+                  </div>
+                  
+                  {/* Image Previews */}
+                  {formData.images.length > 0 && (
+                    <div className="grid grid-cols-4 gap-4 mt-4">
+                      {formData.images.map((img, index) => (
+                        <div key={index} className="relative h-24 w-24 border rounded-lg overflow-hidden group">
+                          <Image
+                            src={img}
+                            alt={`Preview ${index + 1}`}
+                            fill
+                            className="object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => removeImage(index)}
+                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X size={12} />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
 
-              <div className="flex justify-end gap-4">
+              <div className="mt-8 flex justify-end gap-3">
                 <button
                   type="button"
-                  onClick={() => {
-                    setShowModal(false)
-                    resetForm()
-                  }}
-                  className="px-4 py-2 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-md"
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-lg hover:bg-gray-50"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  disabled={imageLoading}
-                  className="px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-md disabled:opacity-50"
+                  disabled={loading || imageLoading}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
                 >
-                  {imageLoading ? 'Uploading Image...' : editingProduct ? 'Update Product' : 'Add Product'}
+                  {loading || imageLoading ? 'Saving...' : (editingProduct ? 'Update Product' : 'Add Product')}
                 </button>
               </div>
             </form>

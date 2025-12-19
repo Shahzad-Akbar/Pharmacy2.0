@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import axios from 'axios'
 import {
   Bell,
@@ -40,6 +41,7 @@ interface LowStockItem {
 }
 
 export default function AdminDashboard() {
+  const router = useRouter()
   const [stats, setStats] = useState<DashboardStats>({
     totalSales: '₹0',
     totalOrders: '0',
@@ -99,30 +101,40 @@ export default function AdminDashboard() {
     <div className="p-6 bg-blue-100 min-h-screen">
       {/* Stats Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-6">
-        <div className="bg-white p-6 rounded-lg shadow-sm">
+        <button
+          onClick={() => router.push('/admin/sales')}
+          className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow text-left group cursor-pointer"
+          aria-label="View Sales Analytics"
+        >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-500 text-sm">Total Sales</p>
-              <h3 className="text-2xl font-bold text-gray-800">{stats.totalSales}</h3>
+              <p className="text-gray-500 text-sm group-hover:text-blue-600">Total Sales</p>
+              <h3 className="text-2xl font-bold text-gray-800 group-hover:text-blue-700">{stats.totalSales}</h3>
             </div>
-            <div className="bg-blue-100 p-3 rounded-full">
+            <div className="bg-blue-100 p-3 rounded-full group-hover:bg-blue-200">
               <TrendingUp className="text-blue-600" size={24} />
             </div>
           </div>
-        </div>
+        </button>
 
-        <div className="bg-white p-6 rounded-lg shadow-sm">
+        <button
+          onClick={() => router.push('/admin/orders/analytics')}
+          className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow text-left group cursor-pointer"
+          aria-label="View Orders Analytics"
+        >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-500 text-sm">Total Orders</p>
-              <h3 className="text-2xl font-bold text-gray-800">{stats.totalOrders}</h3>
+              <p className="text-gray-500 text-sm group-hover:text-blue-600">Total Orders</p>
+              <h3 className="text-2xl font-bold text-gray-800 group-hover:text-blue-700">{stats.totalOrders}</h3>
             </div>
-            <div className="bg-green-100 p-3 rounded-full">
+            <div className="bg-green-100 p-3 rounded-full group-hover:bg-green-200">
               <ShoppingCart className="text-green-600" size={24} />
             </div>
           </div>
-        </div>
+        </button>
 
+        <button onClick={() => router.push('/admin/orders')}
+          className='hover:shadow-md transition-shadow text-left group cursor-pointer'>
         <div className="bg-white p-6 rounded-lg shadow-sm">
           <div className="flex items-center justify-between">
             <div>
@@ -134,7 +146,10 @@ export default function AdminDashboard() {
             </div>
           </div>
         </div>
+        </button>
 
+        <button onClick={() => router.push('/admin/inventory')}
+          className='hover:shadow-md transition-shadow text-left group cursor-pointer'>
         <div className="bg-white p-6 rounded-lg shadow-sm">
           <div className="flex items-center justify-between">
             <div>
@@ -146,8 +161,9 @@ export default function AdminDashboard() {
             </div>
           </div>
         </div>
+        </button>
       </div>
-
+      
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Recent Orders */}
         <div className="bg-white rounded-lg shadow-sm">
