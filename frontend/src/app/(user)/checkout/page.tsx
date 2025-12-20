@@ -12,7 +12,7 @@ interface CartItem {
     _id: string
     name: string
     price: number
-    image: string
+    images: string[]
   }
   quantity: number
   price: number
@@ -280,7 +280,7 @@ export default function CheckoutPage() {
               <div key={item._id} className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <Image
-                    src={item.product.image}
+                    src={item.product.images[0]}
                     alt={item.product.name}
                     width={50}
                     height={50}

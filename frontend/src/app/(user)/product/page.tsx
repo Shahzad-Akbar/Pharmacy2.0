@@ -15,6 +15,7 @@ interface Product {
   description: string;
   category: string;
   image: string;
+  images?: string[];
   requiresPrescription: boolean;
   stock: number;
 }
@@ -34,7 +35,7 @@ export default function ProductPage() {
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await axios.get('/api/products/get-products')
+        const response = await axios.get('/api/products/get-products?published=true')
         setProducts(response.data)
         setLoading(false)
       }catch(err){
@@ -197,35 +198,41 @@ export default function ProductPage() {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 sm:gap-4 mb-8">
           {filteredProducts.map((product) => {
             const discountedPrice = product.price - (product.price * (product.discount / 100));
+            const mainImage = (product.images && product.images.length > 0)
+              ? product.images[0]
+              : (product.image || '/product/removed.png')
 
             return (
               <div key={product._id} className="bg-white rounded-lg shadow-sm overflow-hidden flex flex-col p-3 border border-gray-200">
-                <div className="relative h-32 sm:h-40 w-full mb-2">
+                <Link href={`/productdetails/${product._id}`} className="relative h-32 sm:h-40 w-full mb-2 block">
                   {product.discount > 0 && (
                       <div className="absolute top-0 left-0 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-br-lg z-10">
                         {product.discount}% OFF
                       </div>
                     )}
                   <Image
-                    src={product.image}
+                    src={mainImage}
                     alt={product.name}
                     fill
                     className="object-contain"
                   />
-                </div>
+                </Link>
                 <div className="flex flex-col flex-grow mt-2">
-                  <h3 className="font-semibold text-gray-800 text-sm sm:text-base truncate mb-2">{product.name}</h3>
+                  <Link href={`/productdetails/${product._id}`} className="font-semibold text-gray-800 text-sm sm:text-base truncate mb-2 hover:text-blue-600">
+                    {product.name}
+                  </Link>
                   
                   <div className="my-1">
-                    {product.discount > 0 && (
+                    {(product.mrp > 0 && product.mrp > product.price) && (
                         <p className="text-gray-500 text-xs sm:text-sm">
-                          MRP <span className="line-through">₹{product.price.toFixed(2)}</span>
+                          MRP <span className="line-through">₹{product.mrp.toFixed(2)}</span>
                         </p>
                     )}
                     <p className="text-gray-800 font-bold text-md sm:text-lg">₹{discountedPrice.toFixed(2)}</p>
                   </div>
 
-                  <div className="mt-auto flex gap-2 pt-2">
+                  
+                    
                     <button
                       onClick={() => addToCart(product._id)}
                       disabled={product.stock === 0 || loadingCartItems.includes(product._id)}
@@ -242,7 +249,7 @@ export default function ProductPage() {
                           : 'Out of Stock'
                       }
                     </button>
-                  </div>
+                  
                 </div>
               </div>
             );

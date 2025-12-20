@@ -10,7 +10,8 @@ interface OrderItem {
     _id: string
     name: string
     price: number
-    image: string
+    image?: string
+    images?: string[]
   }
   quantity: number
   price: number
@@ -294,7 +295,7 @@ export default function OrdersPage() {
                     >
                       <div className="w-16 h-16 sm:w-20 sm:h-20 flex-shrink-0 bg-gray-100 rounded-md">
                         <Image
-                          src={item.product.image || '/product/removed.png'}
+                          src={item.product?.images?.[0] || item.product?.image || '/product/removed.png'}
                           alt={item.product.name}
                           width={80}
                           height={80}

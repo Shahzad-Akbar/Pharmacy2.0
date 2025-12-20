@@ -12,7 +12,8 @@ interface CartItem {
     _id: string
     name: string
     price: number
-    image: string
+    image?: string
+    images?: string[]
     stock: number
     mrp?: number
     discount?: number
@@ -172,7 +173,7 @@ export default function CartPage() {
                 <div className="w-24 h-24 sm:w-20 sm:h-20 bg-gray-100 rounded-md self-center sm:self-start flex-shrink-0">
                   {item.product ? (
                     <Image
-                      src={item.product.image}
+                      src={item.product?.images?.[0] || item.product?.image || '/product/removed.png'}
                       alt={item.product.name}
                       height={200}
                       width={200}

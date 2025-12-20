@@ -10,7 +10,7 @@ const productSchema = new mongoose.Schema({
   composition: { type: String, default: '' },
   discount: {type: Number, default: 0},
   stock: { type: Number, default: 0 },
-  isPublished: { type: Boolean, default: false },
+  isPublished: { type: Boolean, default: true },
   requiresPrescription: { type: Boolean, default: false },
   manufacturer: String,
   expiryDate: Date
