@@ -46,6 +46,7 @@ interface ProductFormData {
   discount: string
   stock: string
   requiresPrescription: boolean
+  isPublished: boolean
   manufacturer: string
   expiryDate: string
 }
@@ -68,6 +69,7 @@ export default function ProductsPage() {
     discount: '',
     stock: '',
     requiresPrescription: false,
+    isPublished: true,
     manufacturer: '',
     expiryDate: ''
   })
@@ -86,6 +88,7 @@ export default function ProductsPage() {
       discount: '',
       stock: '',
       requiresPrescription: false,
+      isPublished: true,
       manufacturer: '',
       expiryDate: ''
     })
@@ -103,6 +106,13 @@ export default function ProductsPage() {
     setFormData(prev => ({
       ...prev,
       requiresPrescription: !prev.requiresPrescription
+    }))
+  }
+
+  const togglePublished = () => {
+    setFormData(prev => ({
+      ...prev,
+      isPublished: !prev.isPublished
     }))
   }
 
@@ -162,6 +172,7 @@ export default function ProductsPage() {
       discount: product.discount.toString(),
       stock: product.stock.toString(),
       requiresPrescription: product.requiresPrescription,
+      isPublished: typeof product.isPublished === 'boolean' ? product.isPublished : true,
       manufacturer: product.manufacturer,
       expiryDate: product.expiryDate ? new Date(product.expiryDate).toISOString().split('T')[0] : ''
     })
@@ -197,7 +208,8 @@ export default function ProductsPage() {
         price: parseFloat(formData.price),
         mrp: parseFloat(formData.mrp),
         stock: parseInt(formData.stock),
-        discount: parseInt(formData.discount)
+        discount: parseInt(formData.discount),
+        isPublished: !!formData.isPublished
       }
       const token = localStorage.getItem('token')
       if (!token) {
@@ -539,6 +551,25 @@ export default function ProductsPage() {
                     />
                     <span className="text-gray-700">Requires Prescription</span>
                   </label>
+                </div>
+
+                <div className="flex items-center mt-2">
+                  <div className="flex items-center gap-3">
+                    <span className={`px-2 py-1 rounded text-xs ${formData.isPublished ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                      {formData.isPublished ? 'Published' : 'Unpublished'}
+                    </span>
+                    <button
+                      type="button"
+                      aria-pressed={formData.isPublished}
+                      onClick={togglePublished}
+                      className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${formData.isPublished ? 'bg-green-500' : 'bg-gray-300'}`}
+                    >
+                      <span
+                        className={`inline-block h-5 w-5 transform rounded-full bg-white transition ${formData.isPublished ? 'translate-x-5' : 'translate-x-1'}`}
+                      />
+                    </button>
+                    <span className="text-gray-700 text-sm">Visibility</span>
+                  </div>
                 </div>
 
                 <div className="col-span-2">

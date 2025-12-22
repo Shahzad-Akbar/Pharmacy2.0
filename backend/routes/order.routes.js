@@ -6,7 +6,8 @@ import {
     updateOrderStatus,
     updatePaymentStatus,
     updateOrder,
-    cancelOrder
+    cancelOrder,
+    deleteOrder
 } from '../controllers/order.controller.js';
 import { protectRoute } from '../middleware/protectRoute.js';
 
@@ -19,5 +20,6 @@ router.put('/:id/status', protectRoute, updateOrderStatus);
 router.put('/:id/payment', protectRoute, updatePaymentStatus);
 router.put('/:id', protectRoute, updateOrder);
 router.put('/:id/cancel', protectRoute, cancelOrder);
+router.delete('/:id', protectRoute, deleteOrder);
 
 export default router;

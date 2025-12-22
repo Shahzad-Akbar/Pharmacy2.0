@@ -9,7 +9,8 @@ import {
   CheckCircle,
   CreditCard,
   Printer,
-  X
+  X,
+  Trash
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
@@ -145,6 +146,30 @@ export default function OrdersPage() {
     } catch (error) {
       console.error('Error updating payment status:', error)
       toast.error('Failed to update payment status')
+    }
+  }
+
+  const handleDeleteOrder = async (orderId: string) => {
+    try {
+      const confirmed = window.confirm(`Delete order ${orderId}? This cannot be undone.`)
+      if (!confirmed) return
+      const token = localStorage.getItem('token')
+      await axios.delete(`/api/orders/${orderId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      })
+      toast.success('Order deleted')
+      setShowDetailsModal(false)
+      setShowStatusModal(false)
+      setShowPaymentModal(false)
+      setShowInvoiceModal(false)
+      setSelectedOrder(null)
+      await fetchOrders()
+    } catch (error) {
+      console.error('Error deleting order:', error)
+      toast.error('Failed to delete order')
     }
   }
 
@@ -292,6 +317,13 @@ export default function OrdersPage() {
                 title="Print Invoice"
               >
                 <Printer size={20} />
+              </button>
+              <button
+                onClick={() => handleDeleteOrder(order._id)}
+                className="p-2 text-red-600 hover:bg-red-50 rounded"
+                title="Delete Order"
+              >
+                <Trash size={20} />
               </button>
             </div>
           </div>
