@@ -63,7 +63,10 @@ export default function LoginPage() {
         <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-lg">
           <div>
             <Link href="/" className="text-2xl font-bold text-green-300">
-              PHARMACY
+             <span className="text-xl font-extrabold tracking-wide group-hover:scale-[1.02] transition-transform">
+              <span className="text-green-700">Apple</span>{' '}
+              <span className="text-red-600">Pharma</span>
+            </span>
             </Link>
             <h2 className="mt-6 text-3xl font-bold text-gray-900 text-center">Sign in to your account</h2>
           </div>

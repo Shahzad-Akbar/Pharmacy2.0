@@ -15,7 +15,7 @@ export const getDashboardStats = async (req, res) => {
     const totalOrders = await Order.countDocuments({ user: userId })
     const pendingOrders = await Order.countDocuments({ 
       user: userId,
-      status: { $in: ['Processing', 'Pending'] }
+      status: { $in: ['processing', 'pending'] }
     })
 
     // Get last order date
@@ -77,10 +77,6 @@ export const getRecentOrders = async (req, res) => {
       status: order.status,
       amount: order.total.toString()
     }))
-
-    if (formattedOrders.length === 0) {
-      return res.status(404).json({ message: 'No orders found' })
-    }
 
     res.json(formattedOrders)
   } catch (error) {
