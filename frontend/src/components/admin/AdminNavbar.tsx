@@ -23,8 +23,10 @@ export default function AdminNavbar() {
           {/* Logo and Brand */}
           <div className="flex items-center">
             <Link href="/admin/dashboard" className="flex items-center">
-              <span className="text-2xl font-bold text-green-600 hover:text-green-700 transition-colors">
-                PharmaCare Admin
+              <span className="text-2xl font-bold tracking-wide">
+                <span className="text-green-700">Apple</span>
+                <span className="text-red-600"> Pharma</span>
+                <span className="text-gray-600"> Admin</span>
               </span>
             </Link>
           </div>

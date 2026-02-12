@@ -15,11 +15,11 @@ export default function UserNavbar() {
       localStorage.removeItem('role');
       
       // Call logout endpoint
-      await axios.post('http://localhost:5000/api/auth/logout');
-      
-      router.push('/login');
+      await axios.post('/api/auth/logout');
     } catch (error) {
       console.error('Logout failed:', error);
+    } finally {
+      router.push('/');
     }
   }
 
@@ -27,8 +27,9 @@ export default function UserNavbar() {
     <nav className="bg-white shadow-md">
       <div className="container mx-auto px-6 py-4">
         <div className="flex justify-between items-center">
-          <Link href="/dashboard" className="text-2xl font-bold text-green-300">
-            PHARMACY
+          <Link href="/dashboard" className="text-2xl font-bold tracking-wide">
+            <span className="text-green-700">Apple</span>
+            <span className="text-red-600"> Pharma</span>
           </Link>
 
           <div className="hidden md:flex items-center space-x-6">

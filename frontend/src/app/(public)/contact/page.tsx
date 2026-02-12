@@ -88,7 +88,7 @@ export default function ContactPage() {
                   </svg>
                 </div>
                 <a
-                  href="https://www.google.com/maps/search/?api=1&query=Jahangirpuri%2C+New+Delhi+110033"
+                  href="https://maps.app.goo.gl/s3iXXqazNFfUKCJL9"
                   target="_blank"
                   rel="noreferrer"
                   className="text-blue-600 hover:text-blue-700"

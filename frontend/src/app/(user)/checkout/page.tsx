@@ -1,50 +1,59 @@
-'use client'
-import { useState, useEffect } from 'react'
-import Image from 'next/image'
-import { Phone, MapPin, Clock, CreditCard, ImageUp, UsersRound, Truck, ShoppingCart } from 'lucide-react'
-import axios from 'axios'
-import { useRouter } from 'next/navigation'
-import toast from 'react-hot-toast'
+"use client";
+import { useState, useEffect } from "react";
+import Image from "next/image";
+import {
+  Phone,
+  MapPin,
+  Clock,
+  CreditCard,
+  ImageUp,
+  UsersRound,
+  Truck,
+  ShoppingCart,
+} from "lucide-react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 
 interface CartItem {
-  _id: string
+  _id: string;
   product: {
-    _id: string
-    name: string
-    price: number
-    images: string[]
-  }
-  quantity: number
-  price: number
+    _id: string;
+    name: string;
+    price: number;
+    images: string[];
+  };
+  quantity: number;
+  price: number;
 }
 
 interface OrderData {
   items: Array<{
-    product: string
-    quantity: number
-    price: number
-  }>
-  total: number
+    product: string;
+    quantity: number;
+    price: number;
+  }>;
+  total: number;
   shippingAddress: {
-    name: string
-    phone: string
-    address: string
-    city: string
-    state: string
-    pincode: string
-  }
-  deliveryCharge: number
-  paymentMethod: string
-  notes: string
-  paymentScreenshot?: string  // Make it optional
+    name: string;
+    phone: string;
+    address: string;
+    city: string;
+    state: string;
+    pincode: string;
+  };
+  deliveryCharge: number;
+  paymentMethod: string;
+  notes: string;
+  paymentScreenshot?: string; // Make it optional
 }
 
 export default function CheckoutPage() {
-  const router = useRouter()
-  const [step, setStep] = useState(1)
-  const [cartItems, setCartItems] = useState<CartItem[]>([])
-  const [loading, setLoading] = useState(true)
-  const [submitting, setSubmitting] = useState(false)
+  const router = useRouter();
+  const [step, setStep] = useState(1);
+  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   // const [paymentMethod, setPaymentMethod] = useState('COD')
   // const [formData, setFormData] = useState({
   //   name: '',
@@ -57,52 +66,52 @@ export default function CheckoutPage() {
   //   paymentScreenshot: null as File | null  // Correct type definition
   // })
   const [formErrors, setFormErrors] = useState({
-    name: '',
-    phone: '',
-    address: '',
-    city: '',
-    state: '',
-    pincode: '',
+    name: "",
+    phone: "",
+    address: "",
+    city: "",
+    state: "",
+    pincode: "",
   });
 
   const validateForm = () => {
     const errors = {
-      name: '',
-      phone: '',
-      address: '',
-      city: '',
-      state: '',
-      pincode: '',
+      name: "",
+      phone: "",
+      address: "",
+      city: "",
+      state: "",
+      pincode: "",
     };
     let isValid = true;
 
     if (!formData.name.trim()) {
-      errors.name = 'Full name is required';
+      errors.name = "Full name is required";
       isValid = false;
     }
 
     if (!/^[\d]{10}$/.test(formData.phone)) {
-      errors.phone = 'Phone number must be 10 digits';
+      errors.phone = "Phone number must be 10 digits";
       isValid = false;
     }
 
     if (!formData.address.trim()) {
-      errors.address = 'Delivery address is required';
+      errors.address = "Delivery address is required";
       isValid = false;
     }
 
     if (!formData.city.trim()) {
-      errors.city = 'City is required';
+      errors.city = "City is required";
       isValid = false;
     }
 
     if (!formData.state.trim()) {
-      errors.state = 'State is required';
+      errors.state = "State is required";
       isValid = false;
     }
 
     if (!/^[\d]{6}$/.test(formData.pincode)) {
-      errors.pincode = 'Pincode must be 6 digits';
+      errors.pincode = "Pincode must be 6 digits";
       isValid = false;
     }
 
@@ -118,85 +127,88 @@ export default function CheckoutPage() {
     }
   };
 
-  const [paymentMethod, setPaymentMethod] = useState('COD')
+  const [paymentMethod, setPaymentMethod] = useState("COD");
   const [formData, setFormData] = useState({
-    name: '',
-    phone: '',
-    address: '',
-    city: '',
-    state: '',
-    pincode: '',
-    deliveryTime: 'morning',
-    paymentScreenshot: null as File | null  // Correct type definition
-  })
+    name: "",
+    phone: "",
+    address: "",
+    city: "",
+    state: "",
+    pincode: "",
+    deliveryTime: "morning",
+    paymentScreenshot: null as File | null, // Correct type definition
+  });
 
   useEffect(() => {
-    const token = localStorage.getItem('token')
+    const token = localStorage.getItem("token");
     if (!token) {
-      router.push('/login')
-      return
+      router.push("/login");
+      return;
     }
 
     const fetchCartItems = async () => {
       try {
-        const response = await axios.get('/api/cart', {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-        const items = response.data?.items || []
+        const response = await axios.get("/api/cart", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const items = response.data?.items || [];
         if (items.length === 0) {
-          router.push('/cart')
-          toast.error('Your cart is empty')
-          return
+          router.push("/cart");
+          toast.error("Your cart is empty");
+          return;
         }
-        setCartItems(items)
-        setLoading(false)
+        setCartItems(items);
+        setLoading(false);
       } catch (error) {
-        console.error('Error fetching cart:', error)
-        toast.error('Failed to fetch cart items')
-        router.push('/cart')
+        console.error("Error fetching cart:", error);
+        toast.error("Failed to fetch cart items");
+        router.push("/cart");
       }
-    }
+    };
 
-    fetchCartItems()
-  }, [router])
+    fetchCartItems();
+  }, [router]);
 
-  const subtotal = cartItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0)
-  const deliveryCharge = 40
-  const total = subtotal + deliveryCharge
+  const subtotal = cartItems.reduce(
+    (sum, item) => sum + item.product.price * item.quantity,
+    0,
+  );
+  const deliveryCharge = 40;
+  const total = subtotal + deliveryCharge;
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (step !== 3) return
+    e.preventDefault();
+    if (step !== 3) return;
 
-    if (paymentMethod === 'QR' && !formData.paymentScreenshot) {
-      toast.error('Please upload payment screenshot')
-      setStep(2)
-      return
+    if (paymentMethod === "QR" && !formData.paymentScreenshot) {
+      toast.error("Please upload payment screenshot");
+      setStep(2);
+      return;
     }
 
     try {
-      setSubmitting(true)
-      const token = localStorage.getItem('token')
+      setSubmitting(true);
+      const token = localStorage.getItem("token");
       if (!token) {
-        toast.error('Please login to place order')
-        router.push('/login')
-        return
+        toast.error("Please login to place order");
+        router.push("/login");
+        return;
       }
-      
+
       const shippingAddress = {
         name: formData.name,
         phone: formData.phone,
         address: formData.address,
         city: formData.city,
         state: formData.state,
-        pincode: formData.pincode
-      }
-      
-      const itemsData = cartItems.map(item => ({
+        pincode: formData.pincode,
+      };
+
+      const itemsData = cartItems.map((item) => ({
         product: item.product._id,
         quantity: item.quantity,
-        price: item.product.price * item.quantity
-      }))
+        price: item.product.price * item.quantity,
+      }));
 
       // Initialize orderData with correct typing
       const orderData: OrderData = {
@@ -205,58 +217,58 @@ export default function CheckoutPage() {
         shippingAddress,
         deliveryCharge,
         paymentMethod,
-        notes: formData.deliveryTime
-      }
+        notes: formData.deliveryTime,
+      };
 
       // Add payment screenshot properly
-      if (paymentMethod === 'QR' && formData.paymentScreenshot) {
+      if (paymentMethod === "QR" && formData.paymentScreenshot) {
         // Convert file to base64
-        const reader = new FileReader()
+        const reader = new FileReader();
         reader.onloadend = async () => {
-          orderData.paymentScreenshot = reader.result as string
-        }
-        reader.readAsDataURL(formData.paymentScreenshot)
+          orderData.paymentScreenshot = reader.result as string;
+        };
+        reader.readAsDataURL(formData.paymentScreenshot);
       }
 
-      const response = await axios.post('/api/orders/create', orderData, {
-        headers: { Authorization: `Bearer ${token}` }
-      })
+      const response = await axios.post("/api/orders/create", orderData, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
       if (response.data) {
-        toast.success('Order placed successfully!')
-        await axios.delete('/api/cart/clear', {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-        router.push('/orders')
+        toast.success("Order placed successfully!");
+        await axios.delete("/api/cart/clear", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        router.push("/orders");
       }
     } catch (error) {
-      console.error('Error placing order:', error)
-      toast.error('Failed to place order')
+      console.error("Error placing order:", error);
+      toast.error("Failed to place order");
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
-  }
+  };
 
   // Update file input handler
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
+    const file = e.target.files?.[0];
     if (file) {
-      setFormData({ ...formData, paymentScreenshot: file })
+      setFormData({ ...formData, paymentScreenshot: file });
     }
-  }
+  };
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-16 text-center">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
         <p className="mt-4 text-gray-600">Loading checkout details...</p>
       </div>
-    )
+    );
   }
 
   // Function to navigate back to cart
   const handleBackToCart = () => {
-    router.push('/cart')
-  }
+    router.push("/cart");
+  };
 
   return (
     <div className="container mx-auto px-4 py-8 bg-cyan-50">
@@ -274,7 +286,9 @@ export default function CheckoutPage() {
 
         {/* Order Summary */}
         <div className="bg-white rounded-lg p-6 shadow-md mb-8">
-          <h2 className="text-xl font-semibold mb-4 text-gray-800">Order Summary</h2>
+          <h2 className="text-xl font-semibold mb-4 text-gray-800">
+            Order Summary
+          </h2>
           <div className="space-y-4">
             {cartItems.map((item) => (
               <div key={item._id} className="flex items-center justify-between">
@@ -287,11 +301,17 @@ export default function CheckoutPage() {
                     className="rounded-md"
                   />
                   <div>
-                    <h3 className="font-medium text-gray-800">{item.product.name}</h3>
-                    <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                    <h3 className="font-medium text-gray-800">
+                      {item.product.name}
+                    </h3>
+                    <p className="text-sm text-gray-600">
+                      Quantity: {item.quantity}
+                    </p>
                   </div>
                 </div>
-                <p className="font-medium text-gray-800">₹{item.product.price * item.quantity}</p>
+                <p className="font-medium text-gray-800">
+                  ₹{item.product.price * item.quantity}
+                </p>
               </div>
             ))}
             <div className="border-t pt-4 mt-4">
@@ -301,7 +321,9 @@ export default function CheckoutPage() {
               </div>
               <div className="flex justify-between text-sm mt-2">
                 <span className="text-gray-600">Delivery Charge</span>
-                <span className="font-medium text-gray-800">₹{deliveryCharge}</span>
+                <span className="font-medium text-gray-800">
+                  ₹{deliveryCharge}
+                </span>
               </div>
               <div className="flex justify-between text-lg font-bold mt-2">
                 <span className="text-gray-800">Total</span>
@@ -313,16 +335,28 @@ export default function CheckoutPage() {
 
         {/* Progress Steps */}
         <div className="flex justify-between mb-8">
-          <div className={`flex-1 text-center ${step >= 1 ? 'text-blue-600' : 'text-gray-400'}`}>
-            <div className="w-8 h-8 rounded-full border-2 mx-auto flex items-center justify-center mb-2">1</div>
+          <div
+            className={`flex-1 text-center ${step >= 1 ? "text-blue-600" : "text-gray-400"}`}
+          >
+            <div className="w-8 h-8 rounded-full border-2 mx-auto flex items-center justify-center mb-2">
+              1
+            </div>
             Details
           </div>
-          <div className={`flex-1 text-center ${step >= 2 ? 'text-blue-600' : 'text-gray-400'}`}>
-            <div className="w-8 h-8 rounded-full border-2 mx-auto flex items-center justify-center mb-2">2</div>
+          <div
+            className={`flex-1 text-center ${step >= 2 ? "text-blue-600" : "text-gray-400"}`}
+          >
+            <div className="w-8 h-8 rounded-full border-2 mx-auto flex items-center justify-center mb-2">
+              2
+            </div>
             Payment
           </div>
-          <div className={`flex-1 text-center ${step === 3 ? 'text-blue-600' : 'text-gray-400'}`}>
-            <div className="w-8 h-8 rounded-full border-2 mx-auto flex items-center justify-center mb-2">3</div>
+          <div
+            className={`flex-1 text-center ${step === 3 ? "text-blue-600" : "text-gray-400"}`}
+          >
+            <div className="w-8 h-8 rounded-full border-2 mx-auto flex items-center justify-center mb-2">
+              3
+            </div>
             Confirmation
           </div>
         </div>
@@ -335,7 +369,9 @@ export default function CheckoutPage() {
               <div className="space-y-4">
                 {/* Name */}
                 <div>
-                  <label className="block text-sm font-medium mb-1">Full Name</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Full Name
+                  </label>
                   <div className="flex items-center">
                     <UsersRound size={20} className="text-gray-400 mr-2" />
                     <input
@@ -343,14 +379,18 @@ export default function CheckoutPage() {
                       required
                       className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
                       value={formData.name}
-                      onChange={(e) => setFormData({...formData, name: e.target.value})}
+                      onChange={(e) =>
+                        setFormData({ ...formData, name: e.target.value })
+                      }
                     />
                   </div>
                 </div>
 
                 {/* Phone */}
                 <div>
-                  <label className="block text-sm font-medium mb-1">Phone Number</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Phone Number
+                  </label>
                   <div className="flex items-center">
                     <Phone size={20} className="text-gray-400 mr-2" />
                     <input
@@ -358,14 +398,18 @@ export default function CheckoutPage() {
                       required
                       className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
                       value={formData.phone}
-                      onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                      onChange={(e) =>
+                        setFormData({ ...formData, phone: e.target.value })
+                      }
                     />
                   </div>
                 </div>
 
                 {/* Address */}
                 <div>
-                  <label className="block text-sm font-medium mb-1">Delivery Full Address with Landmark</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Delivery Full Address with Landmark
+                  </label>
                   <div className="flex items-start">
                     <MapPin size={20} className="text-gray-400 mr-2 mt-2" />
                     <textarea
@@ -373,7 +417,9 @@ export default function CheckoutPage() {
                       className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
                       rows={3}
                       value={formData.address}
-                      onChange={(e) => setFormData({...formData, address: e.target.value})}
+                      onChange={(e) =>
+                        setFormData({ ...formData, address: e.target.value })
+                      }
                     />
                   </div>
                 </div>
@@ -386,47 +432,66 @@ export default function CheckoutPage() {
                     required
                     className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
                     value={formData.city}
-                    onChange={(e) => setFormData({...formData, city: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, city: e.target.value })
+                    }
                   />
                 </div>
 
                 {/* State */}
                 <div>
-                  <label className="block text-sm font-medium mb-1">State</label>
+                  <label className="block text-sm font-medium mb-1">
+                    State
+                  </label>
                   <input
                     type="text"
                     required
                     className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
                     value={formData.state}
-                    onChange={(e) => setFormData({...formData, state: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, state: e.target.value })
+                    }
                   />
                 </div>
 
                 {/* Pincode */}
                 <div>
-                  <label className="block text-sm font-medium mb-1">Pincode</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Pincode
+                  </label>
                   <input
                     type="text"
                     required
                     pattern="[0-9]{6}"
                     className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
                     value={formData.pincode}
-                    onChange={(e) => setFormData({...formData, pincode: e.target.value})}
+                    onChange={(e) =>
+                      setFormData({ ...formData, pincode: e.target.value })
+                    }
                   />
                 </div>
 
                 {/* Delivery Time */}
                 <div>
-                  <label className="block text-sm font-medium mb-1">Preferred Delivery Time</label>
+                  <label className="block text-sm font-medium mb-1">
+                    Preferred Delivery Time
+                  </label>
                   <div className="flex items-center">
                     <Clock size={20} className="text-gray-400 mr-2" />
                     <select
                       className="w-full p-2 border rounded focus:ring-2 focus:ring-blue-500"
                       value={formData.deliveryTime}
-                      onChange={(e) => setFormData({...formData, deliveryTime: e.target.value})}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          deliveryTime: e.target.value,
+                        })
+                      }
                     >
                       <option value="morning">Morning (9 AM - 12 PM)</option>
-                      <option value="afternoon">Afternoon (12 PM - 4 PM)</option>
+                      <option value="afternoon">
+                        Afternoon (12 PM - 4 PM)
+                      </option>
                       <option value="evening">Evening (4 PM - 8 PM)</option>
                     </select>
                   </div>
@@ -445,60 +510,76 @@ export default function CheckoutPage() {
           {/* Step 2: Payment */}
           {step === 2 && (
             <div className="bg-white rounded-lg p-6 shadow-md">
-              <h2 className="text-xl font-semibold mb-4 text-gray-800">Payment Method</h2>
-              
+              <h2 className="text-xl font-semibold mb-4 text-gray-800">
+                Payment Method
+              </h2>
+
               {/* Payment Method Selection */}
               <div className="mb-6">
                 <div className="flex flex-col space-y-3">
                   {/* COD Option */}
-                  <label className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors
-                    ${paymentMethod === 'COD' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}">
+                  <label
+                    className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors
+                    ${paymentMethod === 'COD' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}"
+                  >
                     <input
                       type="radio"
                       name="paymentMethod"
                       value="COD"
-                      checked={paymentMethod === 'COD'}
-                      onChange={() => setPaymentMethod('COD')}
+                      checked={paymentMethod === "COD"}
+                      onChange={() => setPaymentMethod("COD")}
                       className="mr-3 h-4 w-4 text-blue-600"
                     />
                     <div className="flex items-center">
                       <Truck size={24} className="text-blue-600 mr-3" />
                       <div>
-                        <p className="font-medium text-gray-800">Cash on Delivery</p>
-                        <p className="text-sm text-gray-500">Pay when your order arrives</p>
+                        <p className="font-medium text-gray-800">
+                          Cash on Delivery
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          Pay when your order arrives
+                        </p>
                       </div>
                     </div>
                   </label>
-                  
+
                   {/* QR Payment Option */}
-                  <label className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors
-                    ${paymentMethod === 'QR' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}">
+                  <label
+                    className="flex items-center p-3 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors
+                    ${paymentMethod === 'QR' ? 'border-blue-500 bg-blue-50' : 'border-gray-200'}"
+                  >
                     <input
                       type="radio"
                       name="paymentMethod"
                       value="QR"
-                      checked={paymentMethod === 'QR'}
-                      onChange={() => setPaymentMethod('QR')}
+                      checked={paymentMethod === "QR"}
+                      onChange={() => setPaymentMethod("QR")}
                       className="mr-3 h-4 w-4 text-blue-600"
                     />
                     <div className="flex items-center">
                       <CreditCard size={24} className="text-blue-600 mr-3" />
                       <div>
-                        <p className="font-medium text-gray-800">Pay Now with QR</p>
-                        <p className="text-sm text-gray-500">Scan QR code and pay instantly</p>
+                        <p className="font-medium text-gray-800">
+                          Pay Now with QR
+                        </p>
+                        <p className="text-sm text-gray-500">
+                          Scan QR code and pay instantly
+                        </p>
                       </div>
                     </div>
                   </label>
                 </div>
               </div>
-              
+
               {/* QR Payment Section - Only show if QR payment method is selected */}
-              {paymentMethod === 'QR' && (
+              {paymentMethod === "QR" && (
                 <div className="text-center mt-4">
-                  <p className="text-gray-600 mb-4">Scan the QR code to make payment</p>
+                  <p className="text-gray-600 mb-4">
+                    Scan the QR code to make payment
+                  </p>
                   <div className="max-w-xs mx-auto mb-4">
                     <Image
-                      src="/qr/payment-qr.jpg"
+                      src="/qr/QR.png"
                       alt="Payment QR Code"
                       width={250}
                       height={250}
@@ -506,27 +587,30 @@ export default function CheckoutPage() {
                     />
                   </div>
                   <p className="text-sm text-gray-500 mb-4">
-                    After payment, please upload the screenshot for verification
+                    For now Online is unabailable, Please pay in cash
                   </p>
-                  <div className="relative">
+                  {/* Below section is for uploading payment screenshot */}
+                  {/* <div className="relative">
                     <div className="absolute left-2 top-1/2 -translate-y-1/2 text-gray-500">
                       <ImageUp size={20} />
                     </div>
                     <input
-  type="file"
-  accept="image/*"
-  name="paymentScreenshot"
-  onChange={handleFileUpload}
-  className="w-full pl-10 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-800"
-/>
-                  </div>
+                      type="file"
+                      accept="image/*"
+                      name="paymentScreenshot"
+                      onChange={handleFileUpload}
+                      className="w-full pl-10 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 text-gray-800"
+                    />
+                  </div> */}
                 </div>
               )}
-              
+
               {/* COD Information - Only show if COD payment method is selected */}
-              {paymentMethod === 'COD' && (
+              {paymentMethod === "COD" && (
                 <div className="bg-gray-50 p-4 rounded-lg mt-4">
-                  <p className="text-gray-700 mb-2 font-medium">Cash on Delivery Information:</p>
+                  <p className="text-gray-700 mb-2 font-medium">
+                    Cash on Delivery Information:
+                  </p>
                   <ul className="text-sm text-gray-600 space-y-2 list-disc pl-5">
                     <li>Pay in cash when your order is delivered</li>
                     <li>Please keep exact change ready if possible</li>
@@ -535,7 +619,7 @@ export default function CheckoutPage() {
                   </ul>
                 </div>
               )}
-              
+
               <div className="flex gap-4 mt-6">
                 <button
                   type="button"
@@ -548,11 +632,11 @@ export default function CheckoutPage() {
                   type="button"
                   onClick={() => {
                     // For QR payment, validate screenshot
-                    if (paymentMethod === 'QR' && !formData.paymentScreenshot) {
-                      toast.error('Please upload payment screenshot')
-                      return
+                    if (paymentMethod === "QR" && !formData.paymentScreenshot) {
+                      toast.error("Please Go For Cash On Delivery");
+                      return;
                     }
-                    setStep(3)
+                    setStep(3);
                   }}
                   className="flex-1 bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700"
                 >
@@ -567,24 +651,33 @@ export default function CheckoutPage() {
             <div className="bg-white rounded-lg p-6 shadow-md text-center">
               <div className="mb-6">
                 <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  {paymentMethod === 'COD' ? 
-                    <Truck size={32} className="text-green-600" /> : 
-                    <CreditCard size={32} className="text-green-600" />}
+                  {paymentMethod === "COD" ? (
+                    <Truck size={32} className="text-green-600" />
+                  ) : (
+                    <CreditCard size={32} className="text-green-600" />
+                  )}
                 </div>
-                <h2 className="text-xl font-semibold mb-2 text-green-600">Confirm Your Order</h2>
+                <h2 className="text-xl font-semibold mb-2 text-green-600">
+                  Confirm Your Order
+                </h2>
                 <p className="text-gray-600">
                   Please review your order details before final confirmation.
                 </p>
                 <div className="mt-4 text-left bg-gray-50 p-4 rounded-lg">
-                  <p className="font-medium text-gray-700">Payment Method: 
+                  <p className="font-medium text-gray-700">
+                    Payment Method:
                     <span className="ml-2 font-normal">
-                      {paymentMethod === 'COD' ? 'Cash on Delivery' : 'Online Payment (QR)'}
+                      {paymentMethod === "COD"
+                        ? "Cash on Delivery"
+                        : "Online Payment (QR)"}
                     </span>
                   </p>
-                  <p className="font-medium text-gray-700 mt-2">Delivery Address: 
+                  <p className="font-medium text-gray-700 mt-2">
+                    Delivery Address:
                     <span className="ml-2 font-normal text-sm block mt-1">
-                      {formData.name}, {formData.phone}<br/>
-                      {formData.address}, {formData.city},<br/>
+                      {formData.name}, {formData.phone}
+                      <br />
+                      {formData.address}, {formData.city},<br />
                       {formData.state} - {formData.pincode}
                     </span>
                   </p>
@@ -596,7 +689,7 @@ export default function CheckoutPage() {
                   disabled={submitting}
                   className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 disabled:bg-blue-300"
                 >
-                  {submitting ? 'Placing Order...' : 'Place Order'}
+                  {submitting ? "Placing Order..." : "Place Order"}
                 </button>
                 <button
                   type="button"
@@ -612,5 +705,5 @@ export default function CheckoutPage() {
         </form>
       </div>
     </div>
-  )
+  );
 }

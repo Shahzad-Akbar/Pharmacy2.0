@@ -94,17 +94,17 @@ export default function Home() {
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden group hover:shadow-xl transition-all">
             <div className="h-48 sm:h-64 relative overflow-hidden">
               <Image
-                src="/landing/multivitamin.jpeg"
-                alt="Multivitamin Complex"
+                src="/landing/vitamins.png"
+                alt="Multivitamin Capsules"
                 fill
                 className="object-cover group-hover:scale-110 transition-transform duration-300"
               />
             </div>
             <div className="p-4 sm:p-6">
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Multivitamin Complex</h3>
-              <p className="text-gray-600 mb-4">Complete daily nutrition in one tablet</p>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">Multivitamin Capsules</h3>
+              <p className="text-gray-600 mb-4">Supports immunity and overall daily health</p>
               <div className="flex justify-between items-center mb-4">
-                <span className="text-xl sm:text-2xl font-bold text-emerald-600">24.99</span>
+                <span className="text-xl sm:text-2xl font-bold text-emerald-600">₹210</span>
                 <span className="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm">Best Seller</span>
               </div>
               <Link 
@@ -119,17 +119,17 @@ export default function Home() {
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden group hover:shadow-xl transition-all">
             <div className="h-48 sm:h-64 relative overflow-hidden">
               <Image
-                src="/landing/allergy-relief.jpeg"
-                alt="Allergy Relief Medicine"
+                src="/landing/antacid.png"
+                alt="Antacid Tablets"
                 fill
                 className="object-cover group-hover:scale-110 transition-transform duration-300"
               />
             </div>
             <div className="p-4 sm:p-6">
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">Allergy Relief</h3>
-              <p className="text-gray-600 mb-4">24-hour allergy symptom relief</p>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">Antacid Tablets</h3>
+              <p className="text-gray-600 mb-4">Quick relief from acidity, gas, and indigestion</p>
               <div className="flex justify-between items-center mb-4">
-                <span className="text-xl sm:text-2xl font-bold text-emerald-600">19.99</span>
+                <span className="text-xl sm:text-2xl font-bold text-emerald-600">₹85</span>
                 <span className="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm">New Arrival</span>
               </div>
               <Link 
@@ -144,17 +144,17 @@ export default function Home() {
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden group hover:shadow-xl transition-all">
             <div className="h-48 sm:h-64 relative overflow-hidden">
               <Image
-                src="/landing/first-kit.jpeg"
-                alt="First Aid Kit"
+                src="/landing/paracetamol.png"
+                alt="Paracetamol Tablets"
                 fill
                 className="object-cover group-hover:scale-110 transition-transform duration-300"
               />
             </div>
             <div className="p-4 sm:p-6">
-              <h3 className="text-xl font-semibold text-gray-800 mb-2">First Aid Kit</h3>
-              <p className="text-gray-600 mb-4">Complete emergency care package</p>
+              <h3 className="text-xl font-semibold text-gray-800 mb-2">Paracetamol Tablets</h3>
+              <p className="text-gray-600 mb-4">Fast relief from fever, headache, and body pain</p>
               <div className="flex justify-between items-center mb-4">
-                <span className="text-xl sm:text-2xl font-bold text-emerald-600">34.99</span>
+                <span className="text-xl sm:text-2xl font-bold text-emerald-600">₹35</span>
                 <span className="bg-emerald-100 text-emerald-800 px-3 py-1 rounded-full text-sm">Essential</span>
               </div>
               <Link 
