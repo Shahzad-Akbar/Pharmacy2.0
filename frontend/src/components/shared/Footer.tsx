@@ -51,6 +51,14 @@ export default function Footer() {
                   Products
                 </Link>
               </li>
+              <li>
+                <Link
+                  href="/terms"
+                  className="text-blue-300 hover:text-blue-300 underline"
+                >
+                  Terms & Conditions
+                </Link>
+              </li>
             </ul>
           </div>
 

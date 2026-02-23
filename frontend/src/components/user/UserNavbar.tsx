@@ -10,16 +10,18 @@ export default function UserNavbar() {
 
   const handleLogout = async () => {
     try {
-      // Remove token from localStorage
-      localStorage.removeItem('token');
-      localStorage.removeItem('role');
+      // 1. Clear all authentication data from storage
+      localStorage.clear();
+      sessionStorage.clear();
       
-      // Call logout endpoint
+      // 2. Call logout endpoint to clear the HTTP-only cookie
       await axios.post('/api/auth/logout');
     } catch (error) {
       console.error('Logout failed:', error);
     } finally {
-      router.push('/');
+      // 3. Use window.location.replace to go to login page
+      // This replaces the current history entry and ensures a clean state
+      window.location.replace('/login');
     }
   }
 
@@ -72,7 +74,7 @@ export default function UserNavbar() {
               Products
             </Link>
             <Link href="/cart" className="text-gray-600 hover:text-blue-600">
-              Cart (0)
+              Cart
             </Link>
             <Link href="/profile" className="text-gray-600 hover:text-blue-600">
               Profile

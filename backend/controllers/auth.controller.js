@@ -47,20 +47,18 @@ export const signup = async (req, res) => {
         }
 
         if(newUser){
-        generateTokenAndSetCookie(newUser._id, res);
-        newUser.save();
+            await newUser.save();
 
-        res.status(201).json({
-            _id: newUser._id,
-            username: newUser.username,
-            email: newUser.email,
-            role: newUser.role,
-            address: newUser.address,
-            phone: newUser.phone,
-            profileImg: newUser.profileImg,
-            isActive: newUser.isActive,            
-        })
-
+            res.status(201).json({
+                success: true,
+                message: 'User registered successfully. Please login.',
+                user: {
+                    _id: newUser._id,
+                    username: newUser.username,
+                    email: newUser.email,
+                    role: newUser.role
+                }
+            });
         }else{
             res.status(400).json({
                 success: false,
@@ -111,20 +109,10 @@ export const login = async (req, res) => {
         user.lastLogin = new Date();
         await user.save();
 
-        // Generate token and get it
-        const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-            expiresIn: '15d'
-        });
+        // Generate token and set cookie
+        generateTokenAndSetCookie(user._id, user.role, res);
 
-        // Set cookie
-        res.cookie('jwt', token, {
-            maxAge: 15 * 24 * 60 * 60 * 1000,
-            httpOnly: true,
-            sameSite: 'strict',
-            secure: process.env.NODE_ENV !== 'development'
-        });
-
-        // Send response with token
+        // Send response
         res.status(200).json({
             _id: user._id,
             username: user.username,
@@ -134,7 +122,7 @@ export const login = async (req, res) => {
             phone: user.phone,
             profileImg: user.profileImg,
             isActive: user.isActive,
-            token: token // Add token to response
+            token: jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '15d' })
         });
     } catch (error) {
         console.error("error in login controller", error.message);
@@ -148,7 +136,19 @@ export const login = async (req, res) => {
 
 export const logout = async (req, res) => {
     try {
-        res.cookie("jwt","", {maxage: 0});
+        res.cookie("jwt", "", {
+            httpOnly: true,
+            expires: new Date(0),
+            sameSite: 'lax',
+            secure: process.env.NODE_ENV === 'production'
+        });
+        
+        res.cookie("role", "", {
+            httpOnly: false,
+            expires: new Date(0),
+            sameSite: 'lax',
+            secure: process.env.NODE_ENV === 'production'
+        });
         
         res.status(200).json({
             success: true,

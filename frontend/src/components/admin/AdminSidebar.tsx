@@ -1,6 +1,7 @@
 'use client'
 import { usePathname } from 'next/navigation'
 import Link from 'next/link'
+import axios from 'axios'
 import {
   LayoutDashboard,
   Package,
@@ -23,10 +24,23 @@ export default function AdminSidebar() {
     { icon: Settings, label: 'Settings', href: '/admin/settings' }
   ]
 
-  const handleLogout = () => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('role')
-    window.location.href = '/login'
+  const handleLogout = async () => {
+    try {
+      // 1. Clear all local storage
+      localStorage.clear();
+      
+      // 2. Clear all session storage
+      sessionStorage.clear();
+
+      // 3. Call backend logout to clear cookies
+      await axios.post('/api/auth/logout');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    } finally {
+      // 4. Force a hard reload and redirect to login
+      // This ensures all state is wiped and replaces history entry
+      window.location.replace('/login');
+    }
   }
 
   return (

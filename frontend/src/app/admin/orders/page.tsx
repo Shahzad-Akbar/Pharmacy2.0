@@ -628,29 +628,29 @@ export default function OrdersPage() {
 
       {/* Print-Only Invoice Area */}
       {selectedOrder && (
-        <div id="print-area" className="hidden">
-          <div className="p-8">
-            <div className="flex justify-between items-start mb-4">
-              <div>
-                <h1 className="text-2xl font-bold">My Pharmacy</h1>
+        <div id="print-area" className="print-only">
+          <div className="print-content">
+            <div className="invoice-header">
+              <div className="brand">
+                <h1 className="text-2xl font-bold">Apple Pharma</h1>
                 <p className="text-sm">Invoice</p>
               </div>
-              <div className="text-right">
+              <div className="order-info">
                 <p className="text-sm">Order ID: {selectedOrder._id}</p>
                 <p className="text-sm">Date: {new Date(selectedOrder.createdAt).toLocaleString()}</p>
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4 mb-4">
-              <div>
-                <h2 className="font-semibold">Bill To</h2>
-                <p>{selectedOrder.shippingAddress.name}</p>
+            <div className="billing-grid">
+              <div className="billing-info">
+                <h2 className="font-semibold border-b mb-1">Bill To</h2>
+                <p className="font-medium">{selectedOrder.shippingAddress.name}</p>
                 <p>{selectedOrder.shippingAddress.phone}</p>
-                <p>{selectedOrder.shippingAddress.address}</p>
-                <p>{selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.state} {selectedOrder.shippingAddress.pincode}</p>
+                <p className="text-sm">{selectedOrder.shippingAddress.address}</p>
+                <p className="text-sm">{selectedOrder.shippingAddress.city}, {selectedOrder.shippingAddress.state} {selectedOrder.shippingAddress.pincode}</p>
               </div>
-              <div>
-                <h2 className="font-semibold">Payment</h2>
+              <div className="payment-info">
+                <h2 className="font-semibold border-b mb-1">Payment</h2>
                 <p>Method: {selectedOrder.paymentMethod}</p>
                 <p>Status: {selectedOrder.paymentStatus}</p>
                 {selectedOrder.tracking && (
@@ -659,52 +659,147 @@ export default function OrdersPage() {
               </div>
             </div>
 
-            <table className="w-full text-sm mb-4">
+            <table className="invoice-table">
               <thead>
                 <tr>
-                  <th className="text-left py-2">Item</th>
-                  <th className="text-right py-2">Qty</th>
-                  <th className="text-right py-2">Unit Price</th>
-                  <th className="text-right py-2">Line Total</th>
+                  <th className="text-left">Item</th>
+                  <th className="text-right">Qty</th>
+                  <th className="text-right">Unit Price</th>
+                  <th className="text-right">Line Total</th>
                 </tr>
               </thead>
               <tbody>
                 {selectedOrder.items.map((item, idx) => (
                   <tr key={idx}>
-                    <td className="py-2">{item.product ? item.product.name : 'Unknown Product'}</td>
-                    <td className="py-2 text-right">{item.quantity}</td>
-                    <td className="py-2 text-right">₹{item.product?.price ?? '-'}</td>
-                    <td className="py-2 text-right">₹{item.price}</td>
+                    <td>{item.product ? item.product.name : 'Unknown Product'}</td>
+                    <td className="text-right">{item.quantity}</td>
+                    <td className="text-right">₹{item.product?.price ?? '-'}</td>
+                    <td className="text-right">₹{item.price}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
 
-            <div className="flex justify-end">
-              <div className="w-64 text-sm">
+            <div className="totals-section">
+              <div className="totals-box">
                 <div className="flex justify-between py-1">
                   <span>Delivery</span>
                   <span>₹{selectedOrder.deliveryCharge}</span>
                 </div>
-                <div className="flex justify-between font-semibold border-t mt-2 pt-2">
+                <div className="flex justify-between font-bold border-t mt-1 pt-1">
                   <span>Total</span>
                   <span>₹{selectedOrder.total}</span>
                 </div>
               </div>
             </div>
 
-            <div className="mt-8 text-xs text-gray-700">
-              <p>Thank you for your purchase!</p>
+            <div className="footer-note">
+              <p>Thank you for choosing Apple Pharma!</p>
+              <p className="text-[10px] mt-1 text-gray-500">Computer generated invoice. No signature required.</p>
             </div>
           </div>
         </div>
       )}
 
       <style jsx>{`
+        /* Hide print area by default on screen */
+        .print-only {
+          display: none;
+        }
+
         @media print {
-          body * { visibility: hidden; }
-          #print-area, #print-area * { visibility: visible; }
-          #print-area { position: absolute; left: 0; top: 0; width: 100%; }
+          /* Reset page styles */
+          @page {
+            size: A4;
+            margin: 1cm;
+          }
+
+          /* Hide everything except print area */
+          body * {
+            display: none !important;
+          }
+
+          /* Show print area and its children */
+          .print-only, 
+          .print-only * {
+            display: block !important;
+          }
+
+          /* Layout fixes for print area */
+          .print-only {
+            display: block !important;
+            position: static !important;
+            width: 100% !important;
+            height: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: white !important;
+            color: black !important;
+          }
+
+          .print-content {
+            padding: 0;
+          }
+
+          .invoice-header {
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: start !important;
+            margin-bottom: 20px !important;
+            border-bottom: 2px solid #eee !important;
+            padding-bottom: 10px !important;
+          }
+
+          .billing-grid {
+            display: grid !important;
+            grid-template-columns: 1fr 1fr !important;
+            gap: 20px !important;
+            margin-bottom: 20px !important;
+          }
+
+          .invoice-table {
+            width: 100% !important;
+            border-collapse: collapse !important;
+            margin-bottom: 20px !important;
+            display: table !important;
+          }
+
+          .invoice-table th, 
+          .invoice-table td {
+            border-bottom: 1px solid #eee !important;
+            padding: 8px 0 !important;
+            display: table-cell !important;
+          }
+
+          .invoice-table th {
+            text-align: left !important;
+            font-weight: bold !important;
+          }
+
+          .invoice-table .text-right {
+            text-align: right !important;
+          }
+
+          .totals-section {
+            display: flex !important;
+            justify-content: flex-end !important;
+          }
+
+          .totals-box {
+            width: 200px !important;
+          }
+
+          .footer-note {
+            margin-top: 40px !important;
+            text-align: center !important;
+            border-top: 1px solid #eee !important;
+            padding-top: 10px !important;
+          }
+
+          /* Prevent table rows from breaking across pages */
+          tr {
+            page-break-inside: avoid !important;
+          }
         }
       `}</style>
     </div>

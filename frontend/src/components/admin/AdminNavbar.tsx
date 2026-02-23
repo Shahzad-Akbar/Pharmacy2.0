@@ -4,16 +4,28 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {User, Settings, LogOut } from 'lucide-react';
+import axios from 'axios';
 
 
 export default function AdminNavbar() {
   const router = useRouter();
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const handleLogout = () => {
-    localStorage.removeItem('token');
-    localStorage.removeItem('user');
-    router.push('/login');
+  const handleLogout = async () => {
+    try {
+      // 1. Clear all authentication data from storage
+      localStorage.clear();
+      sessionStorage.clear();
+      
+      // 2. Call logout endpoint to clear the HTTP-only cookie
+      await axios.post('/api/auth/logout');
+    } catch (error) {
+      console.error('Logout failed:', error);
+    } finally {
+      // 3. Use window.location.replace to go to login page
+      // This replaces the current history entry and ensures a clean state
+      window.location.replace('/login');
+    }
   };
 
   return (
