@@ -62,7 +62,7 @@ export default function ForgotPasswordPage() {
           {/* Header */}
           <div className="">
             <Link href="/" className="text-2xl font-bold">
-              <span className="text-green-700">Apple</span> <span className="text-red-600">Pharma</span>
+              <span className="text-green-700">Apple</span> <span className="text-red-600">Medical</span>
             </Link>
             <h2 className="mt-6 text-3xl font-bold text-gray-900 text-center">Reset Password</h2>
             <p className="mt-2 text-center text-gray-600">

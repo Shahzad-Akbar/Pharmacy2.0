@@ -632,7 +632,7 @@ export default function OrdersPage() {
           <div className="print-content">
             <div className="invoice-header">
               <div className="brand">
-                <h1 className="text-2xl font-bold">Apple Pharma</h1>
+                <h1 className="text-2xl font-bold">Apple Medical</h1>
                 <p className="text-sm">Invoice</p>
               </div>
               <div className="order-info">
@@ -694,7 +694,7 @@ export default function OrdersPage() {
             </div>
 
             <div className="footer-note">
-              <p>Thank you for choosing Apple Pharma!</p>
+              <p>Thank you for choosing Apple Medical!</p>
               <p className="text-[10px] mt-1 text-gray-500">Computer generated invoice. No signature required.</p>
             </div>
           </div>

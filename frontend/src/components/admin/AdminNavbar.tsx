@@ -37,7 +37,7 @@ export default function AdminNavbar() {
             <Link href="/admin/dashboard" className="flex items-center">
               <span className="text-2xl font-bold tracking-wide">
                 <span className="text-green-700">Apple</span>
-                <span className="text-red-600"> Pharma</span>
+                <span className="text-red-600"> Medical</span>
                 <span className="text-gray-600"> Admin</span>
               </span>
             </Link>

@@ -31,7 +31,7 @@ export default function UserNavbar() {
         <div className="flex justify-between items-center">
           <Link href="/dashboard" className="text-2xl font-bold tracking-wide">
             <span className="text-green-700">Apple</span>
-            <span className="text-red-600"> Pharma</span>
+            <span className="text-red-600"> Medical</span>
           </Link>
 
           <div className="hidden md:flex items-center space-x-6">

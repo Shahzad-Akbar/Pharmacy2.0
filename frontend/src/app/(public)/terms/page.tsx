@@ -19,7 +19,7 @@ export default function TermsPage() {
             <section>
               <h2 className="text-2xl font-bold text-gray-800 mb-4">1. Introduction</h2>
               <p>
-                Welcome to Apple Pharma. These Terms and Conditions govern your use of our website and services. 
+                Welcome to Apple Medical. These Terms and Conditions govern your use of our website and services. 
                 By accessing or using our platform, you agree to be bound by these terms. If you do not agree 
                 with any part of these terms, please do not use our services.
               </p>
@@ -28,7 +28,7 @@ export default function TermsPage() {
             <section>
               <h2 className="text-2xl font-bold text-gray-800 mb-4">2. Medical Disclaimer</h2>
               <p>
-                The information provided on Apple Pharma is for educational purposes only and is not intended 
+                The information provided on Apple Medical is for educational purposes only and is not intended 
                 as a substitute for professional medical advice, diagnosis, or treatment. Always seek the 
                 advice of your physician or other qualified health provider with any questions you may have 
                 regarding a medical condition.
@@ -57,7 +57,7 @@ export default function TermsPage() {
               <h2 className="text-2xl font-bold text-gray-800 mb-4">5. Privacy Policy</h2>
               <p>
                 Your privacy is important to us. Please review our Privacy Policy, which also governs your 
-                visit to Apple Pharma, to understand our practices.
+                visit to Apple Medical, to understand our practices.
               </p>
             </section>
 

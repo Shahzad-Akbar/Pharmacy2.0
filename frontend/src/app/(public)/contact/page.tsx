@@ -28,7 +28,7 @@ export default function ContactPage() {
     setSuccess('')
     setTimeout(() => {
       setSubmitting(false)
-      setSuccess('Thanks for contacting Apple Pharma. We will reach you shortly.')
+      setSuccess('Thanks for contacting Apple Medical. We will reach you shortly.')
       setFormData({ name: '', email: '', phone: '', subject: '', message: '' })
     }, 800)
   }
@@ -45,7 +45,7 @@ export default function ContactPage() {
       
       <div className="bg-gradient-to-r from-green-600 to-emerald-500 text-white py-8 text-center">
         <div className="container mx-auto px-6">
-          <h1 className="text-4xl font-bold">Contact Apple Pharma</h1>
+          <h1 className="text-4xl font-bold">Contact Apple Medical</h1>
           <p className="mt-2 opacity-90">Genuine medicines, helpful guidance, and fast delivery</p>
         </div>
       </div>
@@ -93,7 +93,7 @@ export default function ContactPage() {
                   rel="noreferrer"
                   className="text-blue-600 hover:text-blue-700"
                 >
-                  Apple Pharma, Katari Hill Road,<br />
+                  Apple Medical, Katari Hill Road,<br />
                   Gaya, Bihar 110033
                 </a>
               </div>
@@ -108,7 +108,7 @@ export default function ContactPage() {
           {/* Right Column - Contact Form */}
           <div className="bg-white p-8 rounded-lg shadow-lg">
             <h2 className="text-3xl font-bold mb-6 text-right">
-              <span className="text-green-700">Apple</span> <span className="text-red-600">Pharma</span>
+              <span className="text-green-700">Apple</span> <span className="text-red-600">Medical</span>
             </h2>
             {success && <div className="mb-4 p-3 rounded bg-green-50 text-green-700">{success}</div>}
             <form onSubmit={handleSubmit} className="space-y-6">

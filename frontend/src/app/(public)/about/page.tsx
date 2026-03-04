@@ -10,11 +10,11 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12 items-center">
             <div className="text-center lg:text-left relative z-10">
               <h1 className="text-3xl md:text-5xl font-bold text-[#023E8A] mb-4 md:mb-6 leading-tight">
-                About <span className="text-green-700">Apple</span> <span className="text-red-600">Pharma</span>
+                About <span className="text-green-700">Apple</span> <span className="text-red-600">Medical</span>
               </h1>
               <div className="w-20 h-2 bg-[#0096C7] mb-8"></div>
               <p className="text-gray-700 text-lg mb-6 leading-relaxed">
-                Welcome to <span className="text-green-700 font-semibold">Apple Pharma</span> — your local, trusted online medical store. We deliver genuine medicines, helpful guidance, and fast service designed around your health.
+                Welcome to <span className="text-green-700 font-semibold">Apple Medical</span> — your local, trusted online medical store. We deliver genuine medicines, helpful guidance, and fast service designed around your health.
               </p>
               <p className="text-gray-700 text-lg mb-8 leading-relaxed">
                 What we offer:

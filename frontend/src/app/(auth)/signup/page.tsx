@@ -82,7 +82,7 @@ export default function SignupPage() {
             <Link href="/" className="flex items-center justify-center gap-3 group">
               <span className="text-3xl font-extrabold tracking-wide group-hover:scale-[1.02] transition-transform">
                 <span className="text-green-700">Apple</span>{' '}
-                <span className="text-red-600">Pharma</span>
+                <span className="text-red-600">Medical</span>
               </span>
             </Link>
             <h2 className="mt-6 text-3xl font-bold text-gray-900 text-center">Create an account</h2>

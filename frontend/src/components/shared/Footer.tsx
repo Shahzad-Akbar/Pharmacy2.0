@@ -10,7 +10,7 @@ export default function Footer() {
           <div>
             <h3 className="text-lg font-semibold mb-4">About Us</h3>
             <p className="text-gray-300">
-              Apple Pharma delivers genuine, verified medicines at fair prices.
+              Apple Medical delivers genuine, verified medicines at fair prices.
               Enjoy secure payments, fast delivery, discreet packaging, and
               expert pharmacist support—so you can buy with confidence.
             </p>
@@ -142,7 +142,7 @@ export default function Footer() {
         <div className="border-t border-gray-700 mt-8 pt-8 text-center text-gray-300">
           <p>
             © 2026 <span className="text-green-700">Apple</span>{" "}
-            <span className="text-red-600">Pharma</span>. All rights reserved.
+            <span className="text-red-600">Medical</span>. All rights reserved.
           </p>
         </div>
       </div>

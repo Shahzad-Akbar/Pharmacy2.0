@@ -15,7 +15,7 @@ export default function PublicNavbar() {
             {!logoError && (
               <Image
                 src="/images/applepharma-logo.png"
-                alt="Apple Pharma"
+                alt="Apple Medical"
                 width={70}
                 height={70}
                 className=""
@@ -25,7 +25,7 @@ export default function PublicNavbar() {
             )}
             <span className="text-2xl font-extrabold tracking-wide group-hover:scale-[1.02] transition-transform">
               <span className="text-green-700">Apple</span>{' '}
-              <span className="text-red-600">Pharma</span>
+              <span className="text-red-600">Medical</span>
             </span>
           </Link>
           
