@@ -14,11 +14,10 @@ export default function Home() {
         <div className="flex flex-col md:flex-row items-center gap-8 md:gap-12">
           <div className="w-full md:w-1/2 text-center md:text-left">
             <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold text-gray-800 mb-4 sm:mb-6 leading-tight">
-              Your Health, <span className="text-emerald-600">Our Priority</span>
+              Trusted Medicines, <span className="text-emerald-600">Caring Service</span>
             </h1>
             <p className="text-gray-600 text-lg sm:text-xl mb-6 sm:mb-8 leading-relaxed">
-              Experience modern healthcare solutions with our comprehensive range of services. 
-              Your wellness journey starts here with trusted pharmaceutical care.
+              Order authentic medications with confidence. Our licensed pharmacists ensure safe, reliable, and convenient healthcare delivered when you need it most.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
               <Link 
@@ -39,7 +38,7 @@ export default function Home() {
             <div className="absolute -top-4 -left-4 w-48 sm:w-72 h-48 sm:h-72 bg-emerald-100 rounded-full filter blur-3xl opacity-70 animate-pulse"></div>
             <div className="absolute -bottom-4 -right-4 w-48 sm:w-72 h-48 sm:h-72 bg-teal-100 rounded-full filter blur-3xl opacity-70 animate-pulse"></div>
             <Image
-              src="/images/pharmist.png"
+              src="/images/pharmacist.png"
               alt="Professional Pharmacist"
               width={600}
               height={600}
