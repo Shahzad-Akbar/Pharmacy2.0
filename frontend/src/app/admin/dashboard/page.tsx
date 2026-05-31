@@ -211,7 +211,7 @@ export default function AdminDashboard() {
                       <p className="text-xs sm:text-sm text-gray-500 truncate">{items.category}</p>
                     </div>
                     <div className="text-right">
-                      <span className="font-medium text-gray-800 block text-xs uppercase tracking-wider text-gray-400">Stock</span>
+                      <span className="font-medium text-gray-800 block text-xs uppercase tracking-wider ">Stock</span>
                       <p className={`text-sm font-bold ${Number(items.stock) <= 10 ? 'text-red-600' : 'text-orange-600'}`}>{items.stock}</p>
                     </div>
                   </div>
