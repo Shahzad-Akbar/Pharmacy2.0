@@ -51,7 +51,7 @@ export default function AdminNavbar() {
               <span className="text-xl sm:text-2xl font-bold tracking-wide">
                 <span className="text-green-700">Apple</span>
                 <span className="text-red-600"> Medical</span>
-                <span className="text-gray-600"> (Admin)</span>
+                <span className="text-gray-600 hidden sm:block"> (Admin)</span>
               </span>
             </Link>
           </div>
