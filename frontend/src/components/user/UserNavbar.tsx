@@ -1,93 +1,120 @@
 'use client'
 import Link from 'next/link'
 import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import Image from 'next/image'
 import axios from 'axios'
+import {LayoutDashboard, ShoppingCart, User, LogOut, Menu, X } from 'lucide-react'
 
 export default function UserNavbar() {
-  const [isOpen, setIsOpen] = useState(false)
-  const router = useRouter()
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+
 
   const handleLogout = async () => {
     try {
-      // 1. Clear all authentication data from storage
       localStorage.clear();
       sessionStorage.clear();
-      
-      // 2. Call logout endpoint to clear the HTTP-only cookie
       await axios.post('/api/auth/logout');
     } catch (error) {
       console.error('Logout failed:', error);
     } finally {
-      // 3. Use window.location.replace to go to login page
-      // This replaces the current history entry and ensures a clean state
       window.location.replace('/login');
     }
   }
 
+  const navLinks = [
+    { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+    { href: '/cart', label: 'Cart', icon: ShoppingCart, badge: 3 },
+    { href: '/profile', label: 'Profile', icon: User },
+  ]
+
   return (
-    <nav className="bg-white shadow-md">
-      <div className="container mx-auto px-6 py-4">
-        <div className="flex justify-between items-center">
-          <Link href="/dashboard" className="text-2xl font-bold tracking-wide">
-            <span className="text-green-700">Apple</span>
-            <span className="text-red-600"> Medical</span>
+    <nav className="bg-white border-b border-gray-100 sticky top-0 z-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="flex justify-between items-center h-20">
+          {/* Logo and Brand */}
+          <Link href="/dashboard" className="flex items-center gap-2">
+            <div className="w-10 h-10 bg-teal-50 rounded-lg flex items-center justify-center">
+              <Image src="/images/applepharma-logo.png" alt="Apple" width={50} height={50} />
+            </div>
+            <span className="text-2xl font-bold tracking-tight text-green-800">
+              Apple <span className="text-red-600">Medical</span>
+            </span>
           </Link>
 
-          <div className="hidden md:flex items-center space-x-6">
-            <Link href="/dashboard" className="text-gray-600 hover:text-blue-600">
-              Dashboard
-            </Link>
-            <Link href="/cart" className="text-gray-600 hover:text-blue-600">
-              Cart
-            </Link>
-            <Link href="/profile" className="text-gray-600 hover:text-blue-600">
-              Profile
-            </Link>
+          {/* Desktop Navigation Links */}
+          <div className="hidden md:flex items-center gap-8">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className="text-gray-600 hover:text-teal-600 font-medium flex items-center gap-2 relative transition-colors"
+              >
+                <link.icon size={18} />
+                {link.label}
+                {link.badge && (
+                  <span className="absolute -top-2 -right-3 bg-teal-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">
+                    {link.badge}
+                  </span>
+                )}
+              </Link>
+            ))}
             <button
               onClick={handleLogout}
-              className="bg-blue-400 text-white px-4 py-2 rounded hover:bg-blue-700"
+              className="bg-teal-700 hover:bg-teal-800 text-white px-5 py-2.5 rounded-xl font-medium flex items-center gap-2 transition-all shadow-md shadow-teal-100"
             >
-              Logout
+              <LogOut size={18} /> Logout
             </button>
           </div>
 
           {/* Mobile menu button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden text-gray-600"
-          >
-            <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              {isOpen ? (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              ) : (
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-              )}
-            </svg>
-          </button>
-        </div>
-
-        {/* Mobile menu */}
-        <div className={`md:hidden ${isOpen ? 'block' : 'hidden'} mt-4`}>
-          <div className="flex flex-col space-y-4">
-            <Link href="/product" className="text-gray-600 hover:text-blue-600">
-              Products
-            </Link>
-            <Link href="/cart" className="text-gray-600 hover:text-blue-600">
-              Cart
-            </Link>
-            <Link href="/profile" className="text-gray-600 hover:text-blue-600">
-              Profile
-            </Link>
+          <div className="flex items-center md:hidden">
             <button
-              onClick={handleLogout}
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-800 w-full text-left"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="text-gray-600 hover:text-teal-600 p-2 rounded-xl bg-gray-50 transition-colors"
+              aria-label="Toggle menu"
             >
-              Logout
+              {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
           </div>
         </div>
       </div>
+
+      {/* Mobile Navigation Menu */}
+      {isMobileMenuOpen && (
+        <div className="md:hidden bg-white border-t border-gray-100 shadow-2xl animate-in slide-in-from-top duration-300">
+          <div className="px-4 pt-4 pb-6 space-y-2">
+            {navLinks.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center gap-4 text-gray-600 hover:text-teal-600 hover:bg-teal-50 px-4 py-4 rounded-2xl text-base font-bold transition-all"
+              >
+                <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center group-hover:bg-teal-100">
+                  <link.icon size={20} />
+                </div>
+                {link.label}
+                {link.badge && (
+                  <span className="ml-auto bg-teal-600 text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                    {link.badge}
+                  </span>
+                )}
+              </Link>
+            ))}
+            <div className="pt-4 border-t border-gray-50">
+              <button
+                onClick={handleLogout}
+                className="flex items-center gap-4 text-red-600 px-4 py-4 rounded-2xl text-base font-bold w-full transition-colors hover:bg-red-50"
+              >
+                <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center">
+                  <LogOut size={20} />
+                </div>
+                Logout
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </nav>
   )
 }
