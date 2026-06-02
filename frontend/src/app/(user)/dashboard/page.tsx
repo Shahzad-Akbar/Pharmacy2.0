@@ -143,7 +143,7 @@ export default function UserDashboard() {
               href={action.href}
               className="group bg-white p-8 rounded-[24px] border border-gray-50 shadow-sm hover:shadow-xl hover:shadow-teal-50/50 transition-all duration-300 relative overflow-hidden"
             >
-              <div className="absolute top-0 right-0 p-4 opacity-0 group-hover:opacity-100 transition-opacity">
+              <div className="absolute top-0 right-0 p-4 opacity-100 transition-opacity">
                 <ChevronRight className="text-teal-600" size={20} />
               </div>
               <div className="space-y-4 relative z-10">
