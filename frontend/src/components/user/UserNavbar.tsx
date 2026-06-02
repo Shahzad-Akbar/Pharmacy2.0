@@ -23,7 +23,7 @@ export default function UserNavbar() {
 
   const navLinks = [
     { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-    { href: '/cart', label: 'Cart', icon: ShoppingCart, badge: 3 },
+    { href: '/cart', label: 'Cart', icon: ShoppingCart, badge: 1 },
     { href: '/profile', label: 'Profile', icon: User },
   ]
 
