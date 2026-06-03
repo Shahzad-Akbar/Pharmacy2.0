@@ -11,7 +11,6 @@ export default function TermsPage() {
         <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
           <h1 className="text-4xl font-extrabold text-gray-900 mb-8 border-b pb-4">
             <span className="text-green-700">Terms</span> & <span className="text-red-600">Conditions</span>
-            <span>Apple Medical</span>
           </h1>
           
           <div className="prose prose-blue max-w-none text-gray-600 space-y-6">
