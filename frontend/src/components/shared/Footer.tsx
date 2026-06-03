@@ -81,7 +81,7 @@ export default function Footer() {
                 </a>
               </li>
 
-               <li>Email: pharmacyappleofficial@gmail.com</li>
+               <li>Email: applemedicalofficial@gmail.com</li>
 
               <li>Address: Katari Hill Road, Gaya (Bihar), 823001</li>
             </ul>
