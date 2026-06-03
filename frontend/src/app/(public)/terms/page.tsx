@@ -10,7 +10,8 @@ export default function TermsPage() {
       <main className="flex-grow container mx-auto px-4 py-12 max-w-4xl">
         <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
           <h1 className="text-4xl font-extrabold text-gray-900 mb-8 border-b pb-4">
-            <span className="text-green-700">Terms</span> and <span className="text-red-600">Conditions</span>
+            <span className="text-green-700">Terms</span> & <span className="text-red-600">Conditions</span>
+            <span>Apple Medical</span>
           </h1>
           
           <div className="prose prose-blue max-w-none text-gray-600 space-y-6">
