@@ -6,7 +6,6 @@ import {
   MapPin,
   Clock,
   CreditCard,
-  ImageUp,
   UsersRound,
   Truck,
   ShoppingCart,
@@ -54,17 +53,7 @@ export default function CheckoutPage() {
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
-  // const [paymentMethod, setPaymentMethod] = useState('COD')
-  // const [formData, setFormData] = useState({
-  //   name: '',
-  //   phone: '',
-  //   address: '',
-  //   city: '',
-  //   state: '',
-  //   pincode: '',
-  //   deliveryTime: 'morning',
-  //   paymentScreenshot: null as File | null  // Correct type definition
-  // })
+
   const [formErrors, setFormErrors] = useState({
     name: "",
     phone: "",
