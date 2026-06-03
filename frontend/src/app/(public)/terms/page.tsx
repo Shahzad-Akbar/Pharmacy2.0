@@ -1,13 +1,11 @@
 'use client';
 
-import PublicNavbar from '@/components/shared/PublicNavbar';
-
 import Link from 'next/link';
 
 export default function TermsPage() {
   return (
     <div className="flex flex-col min-h-screen bg-gray-50">
-      <PublicNavbar />
+
       
       <main className="flex-grow container mx-auto px-4 py-12 max-w-4xl">
         <div className="bg-white p-8 rounded-xl shadow-sm border border-gray-100">
