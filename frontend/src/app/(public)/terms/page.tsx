@@ -1,7 +1,7 @@
 'use client';
 
 import PublicNavbar from '@/components/shared/PublicNavbar';
-import Footer from '@/components/shared/Footer';
+
 import Link from 'next/link';
 
 export default function TermsPage() {
@@ -85,7 +85,6 @@ export default function TermsPage() {
         </div>
       </main>
 
-      <Footer />
     </div>
   );
 }
