@@ -41,7 +41,7 @@ export default function UserNavbar() {
             </span>
           </Link>
 
-          {/* Desktop Navigation Links */}
+          {/* Desktop Navigation Links */}          
           <div className="hidden md:flex items-center gap-8">
             {navLinks.map((link) => (
               <Link
