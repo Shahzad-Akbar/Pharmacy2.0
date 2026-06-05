@@ -1,6 +1,6 @@
 'use client'
 import { useState, useEffect } from 'react'
-import { Package, Truck, CheckCircle, Clock, AlertCircle, ArrowLeft, Edit, Trash2, X, Star, ChevronRight } from 'lucide-react'
+import { Package, Truck, CheckCircle, Clock, AlertCircle, ArrowLeft, Edit, Trash2, X } from 'lucide-react'
 import axios from 'axios'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
@@ -45,20 +45,20 @@ interface ShippingAddressForm {
   pincode: string
 }
 
-const StarRating = ({ rating }: { rating: number }) => {
-  const totalStars = 5
-  return (
-    <div className="flex items-center">
-      {[...Array(totalStars)].map((_, index) => (
-        <Star
-          key={index}
-          size={20}
-          className={index < rating ? 'text-green-500 fill-current' : 'text-gray-300'}
-        />
-      ))}
-    </div>
-  )
-}
+// const StarRating = ({ rating }: { rating: number }) => {
+//   const totalStars = 5
+//   return (
+//     <div className="flex items-center">
+//       {[...Array(totalStars)].map((_, index) => (
+//         <Star
+//           key={index}
+//           size={20}
+//           className={index < rating ? 'text-green-500 fill-current' : 'text-gray-300'}
+//         />
+//       ))}
+//     </div>
+//   )
+// }
 
 export default function OrdersPage() {
   const [orders, setOrders] = useState<Order[]>([])
@@ -138,27 +138,27 @@ export default function OrdersPage() {
     })
   }
 
-  const getItemsText = (items: OrderItem[]) => {
-    const count = items.length
-    return count === 1 ? '1 item' : `${count} items`
-  }
+  // const getItemsText = (items: OrderItem[]) => {
+  //   const count = items.length
+  //   return count === 1 ? '1 item' : `${count} items`
+  // }
 
-  const getTrackingText = (order: Order) => {
-    if (order.tracking) return order.tracking
+  // const getTrackingText = (order: Order) => {
+  //   if (order.tracking) return order.tracking
     
-    switch (order.status) {
-      case 'delivered':
-        return `Delivered on ${formatDate(order.createdAt)}`
-      case 'in-transit':
-        return 'Package is on the way'
-      case 'processing':
-        return 'Order is being processed'
-      case 'cancelled':
-        return 'Order has been cancelled'
-      default:
-        return 'Order received'
-    }
-  }
+  //   switch (order.status) {
+  //     case 'delivered':
+  //       return `Delivered on ${formatDate(order.createdAt)}`
+  //     case 'in-transit':
+  //       return 'Package is on the way'
+  //     case 'processing':
+  //       return 'Order is being processed'
+  //     case 'cancelled':
+  //       return 'Order has been cancelled'
+  //     default:
+  //       return 'Order received'
+  //   }
+  // }
 
   const handleBackToDashboard = () => {
     router.push('/dashboard')
